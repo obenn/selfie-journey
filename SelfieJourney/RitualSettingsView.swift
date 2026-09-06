@@ -6,7 +6,6 @@ struct RitualSettingsView: View {
     let portraitDates: [Date]
     let preferences: JourneyPreferences
     let backup: CloudBackupManager
-    let support: AppSupport
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var enabled = false
@@ -14,7 +13,6 @@ struct RitualSettingsView: View {
     @State private var saving = false
     @State private var errorMessage: String?
     @State private var showingGuide = false
-    @State private var showingFeedback = false
     @State private var selectedPose: PortraitPose = .classic
     @State private var didLoadPreferences = false
 
@@ -76,7 +74,7 @@ struct RitualSettingsView: View {
                     Text("Four distances, one consistent guide. Face tracking and light checks happen on your device while the camera is open.")
                 }
                 CloudBackupSection(backup: backup)
-                SupportSettingsSection(support: support) { showingFeedback = true }
+                CommunitySettingsSection()
                 Section("MAKE IT FEEL EFFORTLESS") {
                     Label("Same light. A familiar spot.", systemImage: "sun.max")
                     Label("Eyes on the guide. Shoulders relaxed.", systemImage: "person.crop.rectangle")
@@ -122,7 +120,6 @@ struct RitualSettingsView: View {
                 if phase == .active { Task { await reminders.refreshAuthorization() } }
             }
             .sheet(isPresented: $showingGuide) { PortraitGuideView() }
-            .sheet(isPresented: $showingFeedback) { FeedbackView(support: support) }
             .alert(errorMessage == nil ? "iCloud backup" : "Couldn't update your reminder", isPresented: Binding(
                 get: { errorMessage != nil || backup.errorMessage != nil || backup.restorationMessage != nil },
                 set: { if !$0 { clearMessages() } }

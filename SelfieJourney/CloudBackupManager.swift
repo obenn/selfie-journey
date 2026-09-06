@@ -140,14 +140,12 @@ final class CloudBackupManager {
                 lastManifest = manifest
                 lastManifestURL = url
                 mergeDiscovered([url])
-                AppSupport.shared.record(.backupCompleted)
                 let uploaded = try await archive.isFullyUploaded(manifest, url: url, root: root)
                 status = uploaded ? "Backed up to iCloud" : "Backup prepared · iCloud upload pending"
             } catch is CancellationError {
                 status = "Backup paused. Your portraits are still on this device."
             } catch {
                 status = "Backup needs attention"
-                AppSupport.shared.record(.backupError)
                 errorMessage = error.localizedDescription
             }
         }
@@ -199,7 +197,6 @@ final class CloudBackupManager {
                 restorationMessage = restored == 0 ? "All days in this backup are already in your journal. Existing portraits were kept." : "Restored \(restored) missing \(restored == 1 ? "portrait" : "portraits"). Existing days in your journal were kept."
             } catch {
                 status = "Restore paused"
-                if !(error is CancellationError) { AppSupport.shared.record(.backupError) }
                 errorMessage = "\(restored) portraits restored so far. Existing days were kept. \(error.localizedDescription) You can retry safely."
             }
         }

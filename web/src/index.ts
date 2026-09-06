@@ -1,6 +1,6 @@
 import { authorizeAdmin } from "./auth";
-import { HTTPError, choice, feedback, object, readJSON, telemetry } from "./validation";
-import { cleanUp, getFeedback, listFeedback, overview, saveFeedback, saveTelemetry, updateFeedback } from "./storage";
+import { HTTPError, choice, object, readJSON } from "./validation";
+import { cleanUp, getFeedback, listFeedback, overview, updateFeedback } from "./storage";
 
 const publicHost = "selfiejourney.com", apiHost = "api.selfiejourney.com", adminHost = "admin.selfiejourney.com";
 const publicOrigin = `https://${publicHost}`, adminOrigin = `https://${adminHost}`;
@@ -28,15 +28,6 @@ function cors(response: Response, request: Request): Response {
 function notFound(): never { throw new HTTPError(404, "not_found", "This page was not found."); }
 function requireMethod(request: Request, method: string): void {
   if (request.method !== method) throw new HTTPError(405, "method_not_allowed", `Use ${method} for this endpoint.`);
-}
-async function rateLimit(request: Request, binding: RateLimit): Promise<void> {
-  // This edge-only, short-lived key is never written to D1 or application logs.
-  const ip = request.headers.get("cf-connecting-ip") ?? "unknown";
-  if (!(await binding.limit({ key: ip })).success) throw new HTTPError(429, "rate_limited", "Please wait a minute and try again.");
-}
-function checkPublicOrigin(request: Request): void {
-  const origin = request.headers.get("origin");
-  if (origin !== null && origin !== publicOrigin) throw new HTTPError(403, "origin_denied", "This website cannot submit feedback here.");
 }
 async function admin(request: Request, env: WorkerEnv, url: URL): Promise<Response> {
   // Authenticate before handling ANY assets or API routes, including unknown paths.
@@ -74,19 +65,10 @@ async function handle(request: Request, env: WorkerEnv): Promise<Response> {
   // Reject ambiguous paths before delegating to the asset binding's normalization.
   if (/%(?:2f|5c|2e|25)/i.test(url.pathname) || url.pathname.includes("\\") || url.pathname.includes("//")) notFound();
   if (url.hostname === adminHost) return admin(request, env, url);
-  if (url.pathname === "/v1/feedback" || (url.hostname === apiHost && url.pathname === "/v1/telemetry")) {
-    checkPublicOrigin(request);
-    if (request.method === "OPTIONS") {
-      if (request.headers.get("origin") !== publicOrigin) throw new HTTPError(403, "origin_denied", "Origin is not allowed.");
-      return new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": publicOrigin, "Access-Control-Allow-Methods": "POST", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "600", "Vary": "Origin" } });
-    }
-    requireMethod(request, "POST");
-    if (url.pathname === "/v1/feedback") {
-      await rateLimit(request, env.FEEDBACK_RATE_LIMITER);
-      return json(await saveFeedback(env.DB, feedback(await readJSON(request))), 201);
-    }
-    await rateLimit(request, env.TELEMETRY_RATE_LIMITER);
-    return json(await saveTelemetry(env.DB, telemetry(await readJSON(request))), 202);
+  if (url.pathname === "/v1/feedback" || url.pathname === "/v1/telemetry") {
+    // Older builds can still call these URLs. Reject every method before reading
+    // the body or touching storage, rate limiters, or request identifiers.
+    return json({ error: { code: "collection_retired", message: "Feedback and analytics collection has ended. Visit github.com/obenn/selfie-journey to suggest a change or report an issue." } }, 410);
   }
   if (url.hostname === apiHost && url.pathname === "/health" && request.method === "GET") return json({ status: "ok" });
   if (url.hostname !== publicHost) notFound();
@@ -103,16 +85,12 @@ export default {
     } catch (error) {
       if (error instanceof HTTPError) {
         const response = secured(json({ error: { code: error.code, message: error.message } }, error.status), isAdmin);
-        if (error.status === 429) response.headers.set("Retry-After", "60");
         return cors(response, request);
       }
-      // Never log request bodies, contact emails, raw errors, URLs, or identifiers.
-      console.error(JSON.stringify({ event: "request_failed" }));
       return cors(secured(json({ error: { code: "service_unavailable", message: "We could not complete that request. Please try again shortly." } }, 503), isAdmin), request);
     }
   },
   async scheduled(_controller, env) {
     await cleanUp(env.DB);
-    console.info(JSON.stringify({ event: "retention_completed" }));
   },
 } satisfies ExportedHandler<WorkerEnv>;

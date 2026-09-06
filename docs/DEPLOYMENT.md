@@ -1,4 +1,23 @@
-# Deployment record — 6 September 2026
+# Deployment history — 6 September 2026
+
+## No-collection replacement — live
+
+The replacement Worker and website were deployed successfully at **18:33:58 UTC on September 6, 2026**, deployment ID **`8686d2acd95c4131b412ea3600c3a3aa`**.
+
+The website now uses external GitHub support links and explains the no-collection build, private iCloud backups, ordinary website requests, and historical retention. Former intake is retired; protected historical administration and cleanup remain. Worker observability is disabled in the deployment response.
+
+Verified after deployment:
+
+- Root, privacy, and support pages return 200; support links to GitHub and contains no submission form.
+- `POST {}` to both `/v1/feedback` and `/v1/telemetry` on the API host returns **410**, `collection_retired`.
+- Anonymous admin access redirects to Cloudflare Access (302).
+- Workers.dev and preview URLs remain disabled; cron `17 4 * * *` is preserved.
+
+Local checks passed 12 backend runtime tests, type checking, packaging, HTML/local-asset checks, and public/admin JavaScript syntax checks. Native build-2 validation passed 49 unit tests, 6 iPhone UI tests, and 1 iPad UI test. Its signed archive succeeded, but **build 2 has not uploaded to Apple**: export failed with `exportArchive Failed to Use Accounts` and missing Xcode credential keys while the Mac was locked. The website deployment does not publish the native app.
+
+The GitHub repository remains private until its owner changes visibility. No public TestFlight invitation URL exists. See the exact remaining release steps in [App Store status](APP_STORE.md) and [TestFlight](TESTFLIGHT.md).
+
+## Original service deployment — historical record
 
 The public site, API, and protected admin dashboard were deployed to the Strikethrough Cloudflare account.
 
@@ -24,4 +43,4 @@ Live checks returned 200 for public/support/privacy pages and API health. Anonym
 
 Local validation passed: 15 backend runtime/security tests, TypeScript checking, Wrangler packaging, 62 iOS unit tests, and 8 UI test executions across full and targeted runs. An unsigned iPhone Release build also passed. The iOS privacy manifest is included in both simulator and Release app bundles and passes plist validation. The promo page was inspected in a browser at desktop and mobile widths; mobile horizontal overflow was fixed. Dashboard DOM checks cover rendering, safe text insertion, status updates, and expired sessions. Production admin sign-in requires the owner's email PIN and was not completed on their behalf.
 
-The app is not on the App Store or TestFlight yet. The promo uses **Coming soon** until a real release link is available. Rebuild and run the current Xcode project to install the new native settings and reporting flow. See [operations](OPERATIONS.md) for subsequent deployments and release privacy disclosures.
+After this original deployment, build 1 was uploaded to App Store Connect but no installable public beta link was created. The promo continues to use **Coming soon**. The original intake/reporting implementation described above is superseded by the no-collection replacement at the top of this document; keep this section only as deployment history.

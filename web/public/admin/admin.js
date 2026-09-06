@@ -35,7 +35,7 @@
   function svgElement(tag, attributes = {}) { const node = document.createElementNS('http://www.w3.org/2000/svg', tag); Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, String(value))); return node; }
   function renderChart(daily) {
     const container = $('activity-chart'); container.replaceChildren();
-    if (!daily.some(day => Number(day.events) > 0)) { noData('activity-chart', 'The story starts with the first event. Activity will appear here as the app is used with telemetry enabled.'); renderDailyTable(daily); return; }
+    if (!daily.some(day => Number(day.events) > 0)) { noData('activity-chart', 'No retained historical activity in this date range. Collection has ended.'); renderDailyTable(daily); return; }
     const width = 650, height = 255, left = 45, right = 13, top = 16, bottom = 32;
     const plotWidth = width - left - right, plotHeight = height - top - bottom;
     const highest = Math.max(...daily.map(day => Number(day.events) || 0));
@@ -65,18 +65,18 @@
   }
   function renderEvents(items) {
     const node = $('event-list'); node.replaceChildren();
-    if (!items.length) { noData('event-list', 'No app events in this date range yet. Feature activity will appear here when events arrive.'); return; }
+    if (!items.length) { noData('event-list', 'No historical app events remain in this date range.'); return; }
     const max = Math.max(...items.map(item => Number(item.count)), 1);
     items.forEach(item => { const row = element('div', 'event-row'), progress = element('progress'); progress.max = max; progress.value = Number(item.count); progress.setAttribute('aria-label', `${events[item.name] || item.name}: ${number(item.count)}`); row.append(element('span', 'event-name', events[item.name] || item.name), element('span', 'event-count', number(item.count)), progress); node.append(row); });
   }
   function renderModes(items) {
     const node = $('mode-list'); node.replaceChildren();
-    if (!items.length) { noData('mode-list', 'No telemetry received in this date range.'); return; }
+    if (!items.length) { noData('mode-list', 'No retained historical telemetry in this date range.'); return; }
     ['full', 'limited'].forEach(mode => { const item = element('div', 'mode-item'), dot = element('span', 'mode-dot'), copy = element('div'); dot.setAttribute('aria-hidden', 'true'); copy.append(element('strong', '', number(items.find(row => row.mode === mode)?.count)), element('small', '', mode === 'full' ? 'Full telemetry' : 'Limited telemetry')); item.append(dot, copy); node.append(item); });
   }
   function renderVersions(items) {
     const node = $('version-list'); node.replaceChildren();
-    if (!items.length) { noData('version-list', 'No version information yet. Limited telemetry does not include app versions.'); return; }
+    if (!items.length) { noData('version-list', 'No retained historical version information in this date range.'); return; }
     items.forEach(item => { const chip = element('div', 'version-item'); chip.append(element('strong', '', `v${item.version}`), document.createTextNode(`${number(item.count)} events`)); node.append(chip); });
   }
   async function loadOverview() {
@@ -85,7 +85,7 @@
     try {
       const data = await api(`/api/admin/overview?days=${encodeURIComponent($('range').value)}`); if (sequence !== overviewSequence) return;
       document.querySelectorAll('[data-metric]').forEach(node => { node.textContent = number(data.totals[node.dataset.metric]); });
-      $('installations-caption').textContent = `Full telemetry only · last ${Math.min(data.rangeDays, 30)} days`;
+      $('installations-caption').textContent = `Historical Full reports · last ${Math.min(data.rangeDays, 30)} days`;
       renderChart(data.daily || []); renderEvents(data.eventCounts || []); renderModes(data.telemetryModes || []); renderVersions(data.versions || []);
       $('last-updated').textContent = `Updated ${new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(new Date())} · Overview uses UTC dates`;
     } catch (error) {
@@ -107,14 +107,14 @@
   async function loadFeedback(append = false) {
     const sequence = ++listSequence, cursor = append ? nextCursor : null;
     if (append && !cursor) return;
-    if (!append) { currentFilters = { q: $('search').value.trim(), status: $('status-filter').value, category: $('category-filter').value }; nextCursor = null; listItems = []; empty($('feedback-list'), 'Opening the inbox…', 'Your feedback is on its way.'); }
+    if (!append) { currentFilters = { q: $('search').value.trim(), status: $('status-filter').value, category: $('category-filter').value }; nextCursor = null; listItems = []; empty($('feedback-list'), 'Opening the inbox…', 'Loading retained historical feedback.'); }
     $('feedback-error').hidden = true; $('load-more').disabled = true; setBusy('feedback-list', true);
     try {
       const params = new URLSearchParams({ ...currentFilters, limit: '25' }); if (cursor) params.set('cursor', cursor);
       const data = await api(`/api/admin/feedback?${params}`); if (sequence !== listSequence) return;
       listItems = append ? [...listItems, ...data.items] : data.items; nextCursor = data.nextCursor;
       $('feedback-total').textContent = `${number(data.total)} ${Number(data.total) === 1 ? 'note' : 'notes'}`;
-      if (!listItems.length) { const filtered = currentFilters.q || currentFilters.status !== 'all' || currentFilters.category !== 'all'; empty($('feedback-list'), filtered ? 'No notes match just yet.' : 'A quiet inbox, for now.', filtered ? 'Try another search or clear your filters to see more feedback.' : 'When someone sends a thought or reports an issue, it will land right here.'); }
+      if (!listItems.length) { const filtered = currentFilters.q || currentFilters.status !== 'all' || currentFilters.category !== 'all'; empty($('feedback-list'), filtered ? 'No notes match just yet.' : 'No historical notes remain.', filtered ? 'Try another search or clear your filters to see more feedback.' : 'Collection has ended. New suggestions and issues belong on GitHub.'); }
       else $('feedback-list').replaceChildren(...listItems.map(feedbackRow));
       $('load-more').hidden = !nextCursor;
     } catch (error) { if (sequence !== listSequence) return; showError('feedback-error', error); if (!append) { empty($('feedback-list'), 'We couldn’t open the inbox.', 'Your feedback is still safe. Try the search button or refresh the dashboard.'); $('feedback-total').textContent = 'Unavailable'; } }

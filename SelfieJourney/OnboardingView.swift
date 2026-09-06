@@ -4,7 +4,6 @@ import UserNotifications
 struct OnboardingView: View {
     let reminders: ReminderManager
     @Bindable var preferences: JourneyPreferences
-    let support: AppSupport
     let onComplete: () -> Void
 
     @Environment(\.scenePhase) private var scenePhase
@@ -111,15 +110,12 @@ struct OnboardingView: View {
             }
             Text("iCloud backups are on by default when available. You can manage them and restore your story in your daily ritual settings.")
                 .font(.footnote).foregroundStyle(JourneyTheme.secondary)
-            VStack(alignment: .leading, spacing: 12) {
-                Label("A better journey, together", systemImage: "heart.text.clipboard")
+            VStack(alignment: .leading, spacing: 10) {
+                Label("Your story stays yours", systemImage: "lock.shield")
                     .font(.subheadline.weight(.semibold))
-                Text("Full usage and reliability reporting is on by default. Choose what feels right; you can change this anytime in Settings.")
+                Text("We collect no data from the app. Your portraits and notes stay on your device and in your personal iCloud Drive backups.")
                     .font(.footnote).foregroundStyle(JourneyTheme.secondary)
-                TelemetryChoiceView(support: support)
-                Text("Your portraits, journal content, and face tracking data are never included. Reporting starts after setup.")
-                    .font(.footnote).foregroundStyle(JourneyTheme.secondary)
-                Link("Privacy policy", destination: URL(string: "https://selfiejourney.com/privacy")!)
+                Link("Privacy policy", destination: URL(string: "https://selfiejourney.com/privacy/")!)
                     .font(.footnote)
             }
             .padding(18).background(JourneyTheme.surface, in: RoundedRectangle(cornerRadius: 20))
@@ -263,7 +259,6 @@ struct OnboardingView: View {
     }
 
     private func finish() {
-        support.acknowledgeReporting()
         preferences.hasCompletedOnboarding = true
         onComplete()
     }

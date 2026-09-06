@@ -372,12 +372,10 @@ struct LookbackView: View {
                     try? FileManager.default.removeItem(at: url)
                 } else {
                     exportedURL = url
-                    AppSupport.shared.record(.exportCompleted)
                 }
             } catch is CancellationError {
                 // Cancelling leaves the portraits untouched and removes the partial film.
             } catch {
-                AppSupport.shared.record(.exportError)
                 errorMessage = error.localizedDescription
             }
             isExporting = false

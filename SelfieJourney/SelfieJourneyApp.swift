@@ -7,6 +7,7 @@ struct SelfieJourneyApp: App {
     private let startupError: String?
 
     init() {
+        PrivacyMigration.removeLegacyReportingData()
         do {
             #if DEBUG
             let inMemory = ProcessInfo.processInfo.arguments.contains("--uitesting")

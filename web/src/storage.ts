@@ -1,4 +1,4 @@
-import { HTTPError, choice, uuid, type Feedback, type Telemetry, type Status, type Diagnostics } from "./validation";
+import { HTTPError, choice, uuid, type Status, type Diagnostics } from "./validation";
 
 const dayMilliseconds = 86400000;
 export const retention = { feedbackDays: 180, telemetryDays: 30, aggregateDays: 365, diagnosticsDays: 30 } as const;
@@ -8,35 +8,6 @@ function summary(row: FeedbackRow) {
 }
 function detail(row: FeedbackRow) {
   return { id: row.id, createdAt: new Date(row.created_at).toISOString(), source: row.source, category: row.category, status: row.status, message: row.message, ...(row.contact_email ? { contactEmail: row.contact_email } : {}), ...(row.diagnostics_json ? { diagnostics: JSON.parse(row.diagnostics_json) as Diagnostics } : {}) };
-}
-export async function saveFeedback(db: D1Database, input: Feedback) {
-  const id = crypto.randomUUID(), now = Date.now();
-  await db.prepare(`INSERT OR IGNORE INTO feedback (id, submission_id, created_at, updated_at, source, category, message, contact_email, diagnostics_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, input.submissionId, now, now, input.source, input.category, input.message, input.contactEmail ?? null, input.diagnostics ? JSON.stringify(input.diagnostics) : null).run();
-  const saved = await db.prepare("SELECT id FROM feedback WHERE submission_id = ?").bind(input.submissionId).first<{ id: string }>();
-  if (!saved) throw new Error("feedback_receipt_unavailable");
-  return { receiptId: saved.id };
-}
-export async function saveTelemetry(db: D1Database, input: Telemetry) {
-  const receiptId = crypto.randomUUID(), now = Date.now(), day = new Date(now).toISOString().slice(0, 10);
-  const statements = [db.prepare("INSERT OR IGNORE INTO telemetry_batches (batch_id, receipt_id, created_at) VALUES (?, ?, ?)").bind(input.batchId, receiptId, now)];
-  let installationHash: string | null = null;
-  if (input.installationId) {
-    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`selfiejourney:v1:${input.installationId}`));
-    installationHash = Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
-  }
-  // D1 batch executes atomically. A per-attempt random receipt gates every write so a
-  // retry, including concurrent retries, never increments the aggregates twice.
-  for (const event of input.events) {
-    statements.push(db.prepare(`INSERT INTO telemetry_daily (day, mode, event_name, count)
-      SELECT ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM telemetry_batches WHERE batch_id = ? AND receipt_id = ?)
-      ON CONFLICT(day, mode, event_name) DO UPDATE SET count = telemetry_daily.count + excluded.count`)
-      .bind(day, input.mode, event.name, event.count, input.batchId, receiptId));
-    if (input.mode === "full") statements.push(db.prepare(`INSERT INTO telemetry_full (batch_id, created_at, installation_hash, app_version, os_version, device_class, event_name, count)
-      SELECT ?, ?, ?, ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM telemetry_batches WHERE batch_id = ? AND receipt_id = ?)`)
-      .bind(input.batchId, now, installationHash, input.appVersion!, input.osVersion!, input.deviceClass!, event.name, event.count, input.batchId, receiptId));
-  }
-  await db.batch(statements);
-  return { accepted: input.events.reduce((total, event) => total + event.count, 0) };
 }
 export async function listFeedback(db: D1Database, params: URLSearchParams) {
   const clauses = ["created_at >= ?"], values: (string | number)[] = [Date.now() - retention.feedbackDays * dayMilliseconds];

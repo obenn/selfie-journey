@@ -34,7 +34,6 @@ final class CameraService: ObservableObject {
             case .success: self.state = .ready
             case .failure(let error):
                 self.state = .unavailable(error.localizedDescription)
-                AppSupport.shared.record(.cameraError)
             }
         },
         onCapture: { [weak self] result in
@@ -44,7 +43,6 @@ final class CameraService: ObservableObject {
             case .success(let image): self.capturedImage = image
             case .failure(let error):
                 self.errorMessage = error.localizedDescription
-                AppSupport.shared.record(.cameraError)
             }
         },
         onGuidance: { [weak self] guidance, generation in

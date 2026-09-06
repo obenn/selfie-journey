@@ -9,7 +9,6 @@ struct ContentView: View {
     @State private var reminders = ReminderManager()
     @State private var preferences = JourneyPreferences()
     @State private var backup = CloudBackupManager()
-    @State private var support = AppSupport.shared
     @State private var selection = 0
     @State private var showingCamera = false
     @State private var showingSettings = false
@@ -17,39 +16,24 @@ struct ContentView: View {
     @State private var savedStreak = 0
     @State private var savedRetake = false
     @State private var reminderError: String?
-    @State private var hasReportedCurrentSession = false
 
     var body: some View {
         Group {
             if preferences.hasCompletedOnboarding {
                 journey
             } else {
-                OnboardingView(reminders: reminders, preferences: preferences, support: support) {
-                    reportSessionIfReady()
+                OnboardingView(reminders: reminders, preferences: preferences) {
                     Task { await refreshRitual() }
                 }
             }
         }
         .tint(JourneyTheme.accent)
-        .sheet(isPresented: Binding(
-            get: { preferences.hasCompletedOnboarding && !support.hasAcknowledgedReporting },
-            set: { _ in }
-        )) {
-            ReportingWelcomeView(support: support) {
-                support.acknowledgeReporting()
-                reportSessionIfReady()
-            }
-        }
         .task {
-            reportSessionIfReady()
             await refreshRitual()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
-                reportSessionIfReady()
                 Task { await refreshRitual() }
-            } else if phase == .background {
-                hasReportedCurrentSession = false
             }
         }
         .onChange(of: collectionRevision) { _, _ in
@@ -84,7 +68,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingSettings) {
             RitualSettingsView(reminders: reminders, portraitDates: portraits.map(\.date),
-                               preferences: preferences, backup: backup, support: support)
+                               preferences: preferences, backup: backup)
         }
         .overlay(alignment: .top) {
             if saveCelebration && !showingCamera {
@@ -93,7 +77,6 @@ struct ContentView: View {
             }
         }
         .onChange(of: showingCamera) { _, showing in
-            if showing { support.record(.cameraOpened) }
             if !showing && saveCelebration {
                 Task {
                     try? await Task.sleep(for: .seconds(3))
@@ -112,7 +95,6 @@ struct ContentView: View {
         let data = try PortraitImageProcessor.jpegData(from: image)
         savedRetake = portraits.contains { Calendar.current.isDateInToday($0.date) }
         let saved = try PortraitStore.save(imageData: data, note: note, pose: preferences.selectedPose, context: modelContext)
-        support.record(savedRetake ? .portraitRetake : .portraitSaved)
         let dates = portraits.filter { $0.id != saved.id }.map(\.date) + [saved.date]
         savedStreak = StreakCalculator.currentStreak(dates: dates)
         selection = 0
@@ -127,14 +109,6 @@ struct ContentView: View {
         catch { reminderError = error.localizedDescription }
         await backup.refresh()
         await backup.backUp(portraits)
-    }
-
-    private func reportSessionIfReady() {
-        guard preferences.hasCompletedOnboarding, support.hasAcknowledgedReporting else { return }
-        support.activateAfterSetup()
-        guard !hasReportedCurrentSession else { return }
-        hasReportedCurrentSession = true
-        support.record(.appOpen)
     }
 }
 

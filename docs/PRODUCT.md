@@ -10,7 +10,7 @@ Warm paper, sage, terracotta, restrained serif headlines, native SF Symbols, and
 
 ### First-open setup and framing
 
-Setup introduces the journal, presents Full/Limited/Off reporting choices, asks for a portrait distance, and offers a daily reminder time. Full is the initial reporting selection, and automatic reports wait until setup is complete. Notification permission is requested only after **Enable my daily reminder** is tapped. **Maybe later** preserves the chosen time with reminders off; denial provides a Settings route and a way to continue. Completion and pose choice persist across launches.
+Setup introduces the journal and its no-data-collection design, asks for a portrait distance, and offers a daily reminder time. Notification permission is requested only after **Enable my daily reminder** is tapped. **Maybe later** preserves the chosen time with reminders off; denial provides a Settings route and a way to continue. Completion and pose choice persist across launches.
 
 Four illustrated choices control the camera guide and live distance advice:
 
@@ -102,7 +102,7 @@ Unsigned simulator builds and local archive tests validate app behavior, not App
 | Backup | `CloudBackupManager.swift`, `BackupArchive.swift`, `CloudBackupSection.swift` | iCloud snapshots, integrity, upload state, merge restore. |
 | Film | `LookbackView.swift`, `VideoExporter.swift` | Playback, AVAssetWriter export, native sharing. |
 | Reminders | `ReminderManager.swift` | Authorization and serialized UserNotifications scheduling. |
-| Feedback and reporting | `AppSupport.swift`, `SupportModels.swift`, `SupportTransport.swift`, `SupportSettingsSection.swift`, `FeedbackView.swift` | Reporting preferences, bounded diagnostic codes, privacy controls, previewable feedback, ephemeral HTTPS transport. |
+| Privacy and external support | `CommunitySettingsSection.swift`, `PrivacyMigration.swift` | No-collection explanation, browser links to GitHub, removal of obsolete reporting defaults on upgrade. |
 | Appearance | `JourneyTheme.swift`, `Assets.xcassets` | Adaptive colors, common controls, type, icon, inspiration image. |
 
 `Portrait` stores UUID, capture date, image bytes, image revision, note, and pose. SwiftData manages external image storage when appropriate. Preferences use UserDefaults. The app targets iOS 18 for iPhone/iPad, using Xcode 26.6, Swift 5 language mode, default MainActor isolation, and approachable concurrency. There are no third-party packages.
@@ -113,19 +113,17 @@ Camera permission is requested when opening capture. PhotosPicker grants access 
 
 There is no separate app account, analytics SDK, microphone capture, location request, identity recognition, or cloud image processing. The operating system manages normal app-sandbox and iCloud protections. Deleting the app removes the local journal; recovery requires an available completed backup or independent exported copy.
 
-### Feedback and reporting
+### Privacy and external support
 
-**Your daily ritual → Send app feedback** opens an issue, idea, or general note form. The message supports 4,000 characters and an optional reply email. Attaching diagnostics defaults off. Its preview shows exactly the report that will be sent: up to 80 fixed event codes from seven days, their ages rounded to minutes, app version, OS major/minor, and phone/tablet class. It never includes arbitrary error strings, stacks, files, images, notes, or face measurements. The user can refresh the preview, cancel a send, retry the same open draft without duplicate storage, and see a receipt after confirmed delivery. Closing the form does not save an unfinished draft.
+Starting with 1.0 build 2, the app collects no data. The native analytics service, reporting choices, persistent installation identifier, local diagnostic ring, and feedback transport have been removed. `PrivacyMigration` deletes only the four obsolete telemetry/log defaults on upgrade; portraits, notes, reminder choices, and backups are preserved.
 
-**Usage & reliability** has three levels. Off disables automatic reporting; Limited sends event totals without an installation identifier or device metadata; Full adds a random resettable installation identifier and basic version/device context. The backend hashes that identifier before storage. Existing installations receive a reporting-choice sheet before their first automatic upload, tracked by a versioned acknowledgement. Events cover app opens, camera opens/errors, portrait saves/retakes, backup completion/errors, export completion/errors, and feedback opening. These counters are not crash reports or a complete record of usage.
+Settings shows **No data collected** and links to the privacy policy. **Suggest a change or report a bug** opens the project's GitHub Issues page in the system browser. **Selfie Journey on GitHub** opens the repository. Neither URL contains user/device identifiers, app content, or logs. GitHub is a separate service; the user decides whether and what to post. Public issues should not contain private portraits or notes.
 
-Reporting changes cancel pending uploads, discard queued counts, and remove the old identifier when leaving Full. Switching back creates a new identifier. Counts are held in memory and dropped if delivery fails. Already received data follows server retention; changing the setting or resetting the identifier does not erase it. Local diagnostic codes remain available with reporting Off and can be cleared separately. Sharing a diagnostic timeline always requires the feedback attachment choice.
+### Website and historical administrator tools
 
-### Website and administrator tools
+The public site presents the daily portrait ritual, real interface examples, external GitHub support, and the current privacy policy. It says **Coming soon** until a verified installable App Store or TestFlight URL exists. The site has no product analytics scripts or feedback submission form.
 
-The public site presents the daily portrait ritual, real interface examples, support, and privacy choices. It says **Coming soon** until an App Store or TestFlight URL is supplied. It contains no third-party analytics scripts.
-
-The admin site provides feedback search, category/status filters, message details and attached diagnostics, review/resolution status, daily activity, event breakdowns, versions, and counts of observed Full-reporting installations. These are participating installations, not a total-user estimate. The dashboard has explicit loading, error, and empty states. Cloudflare Access restricts it to the owner's email, and the Worker independently verifies the signed identity before serving any admin page or API.
+The previous feedback/telemetry intake is retired. The admin site remains protected by Cloudflare Access and independent Worker JWT verification to manage historical records only. Original retention cleanup continues; upgrading the app does not erase previously received service data. Ordinary Cloudflare website delivery and external GitHub activity are separate from the native app's data practices.
 
 See [operations](OPERATIONS.md) for exact data boundaries, retention, deployment, and release privacy checks.
 
@@ -147,9 +145,9 @@ Automated sources are in `SelfieJourneyTests` and `SelfieJourneyUITests`. They c
 - [ ] Notifications: actual delivery, cancellation after saving, changed times, disabled reminders, permission changes, and time-zone refresh.
 - [ ] Film: every pace, chronology, captions, crop, resolution, duration, cancellation, low-storage errors, and native sharing destinations.
 - [ ] Accessibility: VoiceOver, large Dynamic Type, Reduce Motion, light/dark switching, small screens, and iPad. Verify controls remain reachable.
-- [ ] Reporting: fresh setup and upgrade from an earlier installation; verify the disclosure precedes the first upload. Exercise Full/Limited/Off, identifier reset, backgrounding, failed delivery, and cancellation during a setting change.
-- [ ] Feedback: blank/long messages, invalid/optional email, preview/refresh/omit logs, failed/cancelled sends, unchanged retry receipt, and server visibility. Verify Off still allows an explicitly submitted report.
-- [ ] Web: small-screen layout, keyboard navigation, support form success/errors, admin sign-in and sign-out, unauthorized access denial, filters, status changes, and truthful empty metrics.
+- [ ] Privacy upgrade: confirm obsolete telemetry identifiers/log defaults are removed while portraits, reminders, and backups remain. Confirm no analytics or feedback requests occur during normal use.
+- [ ] External support: verify GitHub links open in the browser with no appended identifiers, logs, or user content; privacy messaging matches the empty collected-data manifest.
+- [ ] Web: small-screen layout, keyboard navigation, GitHub support links, absence of the old feedback form, retired intake rejection, admin sign-in/out, historical record controls, and retention cleanup.
 - [ ] Scale: multi-year fixtures for scrolling, backup size, export memory, duration, and thermals before making long-term performance claims.
 
 ## Next refinements

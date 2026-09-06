@@ -24,11 +24,20 @@ final class SelfieJourneyUITests: XCTestCase {
 
     @MainActor
     private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
+        func isVisibleForInteraction() -> Bool {
+            guard element.isHittable else { return false }
+            // SwiftUI can report offscreen scroll content as hittable. The
+            // onboarding footer stays fixed over that content, so reveal the
+            // control's center above it before synthesizing a tap.
+            let footer = app.buttons["onboarding.continue"]
+            let visibleBottom = footer.exists ? footer.frame.minY : app.frame.maxY
+            return element.frame.midY < visibleBottom && element.frame.midY > app.frame.minY
+        }
         for _ in 0..<5 {
-            if element.isHittable { return }
+            if isVisibleForInteraction() { return }
             app.swipeUp()
         }
-        XCTAssertTrue(element.isHittable, "Expected this control to be reachable by scrolling: \(element)")
+        XCTAssertTrue(isVisibleForInteraction(), "Expected this control to be reachable by scrolling: \(element)")
     }
 
     @MainActor
@@ -44,15 +53,10 @@ final class SelfieJourneyUITests: XCTestCase {
     @MainActor
     func testOnboardingChoosesPoseSkipsRemindersAndKeepsLaterChanges() {
         let app = XCUIApplication()
-        app.launchArguments = ["--uitesting", "--onboarding", "--reset-onboarding", "--reset-support"]
+        app.launchArguments = ["--uitesting", "--onboarding", "--reset-onboarding"]
         app.launch()
         XCTAssertTrue(app.staticTexts["onboarding.welcome"].waitForExistence(timeout: 10))
         keepScreenshot("onboarding", app: app)
-        let onboardingLevels = app.segmentedControls["settings.telemetryLevel"]
-        reveal(onboardingLevels, in: app)
-        XCTAssertTrue(onboardingLevels.buttons["Full"].isSelected)
-        onboardingLevels.buttons["Limited"].tap()
-        XCTAssertTrue(onboardingLevels.buttons["Limited"].isSelected)
         app.buttons["onboarding.continue"].tap()
 
         let classic = app.buttons["pose.classic"]
@@ -106,11 +110,7 @@ final class SelfieJourneyUITests: XCTestCase {
         XCTAssertTrue(app.buttons["pose.close"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["pose.close"].isSelected, "A frame changed in settings should survive relaunch")
         app.navigationBars["Your portrait frame"].buttons.element(boundBy: 0).tap()
-        reveal(app.buttons["settings.telemetry"], in: app)
-        app.buttons["settings.telemetry"].tap()
-        let savedLevels = app.segmentedControls["settings.telemetryLevel"]
-        XCTAssertTrue(savedLevels.waitForExistence(timeout: 5))
-        XCTAssertTrue(savedLevels.buttons["Limited"].isSelected, "The privacy choice made before setup should survive relaunch")
+
     }
 
     @MainActor
@@ -181,6 +181,12 @@ final class SelfieJourneyUITests: XCTestCase {
         XCTAssertTrue(time.waitForExistence(timeout: 5))
         reminderControl.tap()
         XCTAssertFalse(time.exists)
+
+        let github = app.buttons["settings.githubIssues"]
+        reveal(github, in: app)
+        XCTAssertTrue(github.exists, "Suggestions and bug reports should open GitHub instead of collecting feedback in the app")
+        XCTAssertTrue(app.buttons["settings.githubRepository"].exists)
+        XCTAssertFalse(app.buttons["settings.telemetry"].exists)
 
         let guide = app.buttons["A guide to your daily portrait"]
         reveal(guide, in: app)

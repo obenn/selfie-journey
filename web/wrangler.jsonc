@@ -32,11 +32,11 @@
     { "name": "TELEMETRY_RATE_LIMITER", "namespace_id": "940061002", "simple": { "limit": 60, "period": 60 } }
   ],
   "observability": {
-    "enabled": true,
+    "enabled": false,
     "redact_query_string": true,
-    "head_sampling_rate": 0.1,
-    "logs": { "enabled": true, "invocation_logs": false },
-    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+    "head_sampling_rate": 0,
+    "logs": { "enabled": false, "invocation_logs": false, "persist": false },
+    "traces": { "enabled": false, "head_sampling_rate": 0, "persist": false }
   },
   "triggers": { "crons": ["17 4 * * *"] }
 }

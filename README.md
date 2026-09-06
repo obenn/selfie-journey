@@ -4,7 +4,7 @@
 
 A native iPhone and iPad journal for one portrait a day. Find a familiar frame, keep a small daily streak, and watch the ordinary moments become a film of your life.
 
-Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications, iCloud Drive, and CryptoKit. The iOS app has no third-party packages or separate account. A small Cloudflare service handles optional feedback and configurable usage and reliability reporting; portraits and journal notes stay outside that service.
+Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications, iCloud Drive, and CryptoKit. The iOS app has no third-party packages or separate account. The app collects no data: there is no analytics, device identifier, feedback upload, or diagnostic transport. Optional support links open GitHub in the system browser. Selfie Journey is completely free, with no subscriptions or in-app purchases.
 
 ## The experience
 
@@ -15,9 +15,9 @@ Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications
 - **A portrait journal:** review, retake, notes, month groups, sharing, and confirmed deletion. A same-day retake updates that day instead of adding extra streak credit.
 - **A living lookback:** chronological playback, scrubbing, three speeds, optional dates, and on-device MP4 export through the native share sheet.
 - **iCloud backups:** dated portrait-and-note snapshots, automatic and manual backup, upload status, and restore of missing days while preserving the journal already on the device.
-- **A direct feedback channel:** send an idea or issue from settings, add an optional reply email, and choose whether to attach a previewable local diagnostic timeline. Failed sends preserve the open draft for retry.
-- **Clear reporting choices:** Full, Limited, or Off in setup and settings. Full is the initial selection; Limited sends anonymous event totals. Photos, notes, and face measurements are excluded from reporting. Settings also clears local logs and resets the Full reporting identifier.
-- **A companion website:** a responsive promotional page, support and privacy pages, plus an administrator dashboard for feedback and aggregate metrics, protected by Cloudflare Access.
+- **No data collected:** face guidance, journaling, and film creation run on device. Private iCloud backups belong to the user. Upgrading clears the obsolete reporting identifiers and local diagnostic defaults.
+- **A place for ideas:** settings opens [GitHub Issues](https://github.com/obenn/selfie-journey/issues) in the browser without attaching logs, identifiers, or app content. Users choose what to post; issues may be public.
+- **A companion website:** a responsive promotional page, external support links, and privacy notes. Former feedback and telemetry endpoints are retired; protected historical records retain their original cleanup schedule.
 
 Warm paper, sage, and terracotta follow system appearance. Capture has a quiet charcoal canvas; native controls, SF Symbols, typography, and restrained haptics keep the experience familiar.
 

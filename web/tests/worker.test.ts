@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { build } from "esbuild";
 import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 import { exportJWK, generateKeyPair, SignJWT } from "jose";
-import { feedback, telemetry, HTTPError } from "../src/validation";
+import worker from "../src/index";
 
 const issuer = "https://selfiejourney-test.cloudflareaccess.com";
 const audience = "test-only-audience";
@@ -23,7 +23,7 @@ async function signed(overrides: { email?: string; aud?: string; exp?: number; i
   return new SignJWT({ email: overrides.email ?? adminEmail }).setProtectedHeader({ alg: "RS256", kid: key.kid }).setSubject("test-admin")
     .setIssuedAt().setIssuer(overrides.iss ?? issuer).setAudience(overrides.aud ?? audience).setExpirationTime(overrides.exp ?? Math.floor(Date.now() / 1000) + 600).sign(keyPair.privateKey);
 }
-async function createRuntime(limit = 10000, audienceValue = audience, realAssets = false) {
+async function createRuntime(audienceValue = audience, realAssets = false) {
   const runtime = new Miniflare(convertV4MiniflareOptions({
     name: "selfiejourney-test", modules: true, script, compatibilityDate: "2026-09-06",
     bindings: { ACCESS_TEAM_DOMAIN: "selfiejourney-test.cloudflareaccess.com", ACCESS_AUDIENCE: audienceValue, ADMIN_EMAIL: adminEmail },
@@ -32,7 +32,6 @@ async function createRuntime(limit = 10000, audienceValue = audience, realAssets
       ? { assets: { directory: assetDirectory, binding: "ASSETS", run_worker_first: true as const, routerConfig: { has_user_worker: true } } }
       : { serviceBindings: { ASSETS: async (request: Request) => new Response(`asset:${new URL(request.url).pathname}`, { headers: { "Content-Type": "text/html" } }) } }),
     outboundService: async request => new URL(request.url).href === `${issuer}/cdn-cgi/access/certs` ? Response.json({ keys: [key] }) : new Response(null, { status: 403 }),
-    ratelimits: { FEEDBACK_RATE_LIMITER: { namespace_id: "10001", simple: { limit, period: 60 } }, TELEMETRY_RATE_LIMITER: { namespace_id: "10002", simple: { limit, period: 60 } } },
   }));
   const db = await runtime.getD1Database("DB");
   for (const statement of migration.replace(/--[^\n]*/g, "").split(";").filter(value => value.trim())) await db.prepare(statement).run();
@@ -50,25 +49,23 @@ before(async () => {
   token = await signed(); mf = await createRuntime();
 });
 after(async () => { await mf?.dispose(); if (assetDirectory) await rm(assetDirectory, { recursive: true, force: true }); });
-function submit(path: string, data: unknown, extra: Record<string, string> = {}, runtime = mf) {
-  return runtime.dispatchFetch(`https://api.selfiejourney.com${path}`, { method: "POST", headers: { "Content-Type": "application/json", "CF-Connecting-IP": "192.0.2.10", ...extra }, body: JSON.stringify(data) });
-}
 function admin(path: string, headers: Record<string, string> = {}) { return mf.dispatchFetch(`https://admin.selfiejourney.com${path}`, { headers: { "cf-access-jwt-assertion": token, ...headers } }); }
-function validFeedback() { return { submissionId: crypto.randomUUID(), source: "ios", category: "bug", message: "Camera closes when tapping save", diagnostics: { appVersion: "1.0 (2)", osVersion: "26.0", deviceClass: "phone", events: [{ code: "camera_error", ageSeconds: 12 }] } }; }
-function limited() { return { batchId: crypto.randomUUID(), mode: "limited", events: [{ name: "app_open", count: 2 }] }; }
+const legacyDiagnostics = { appVersion: "1.0 (1)", osVersion: "26.0", deviceClass: "phone", events: [{ code: "camera_error", ageSeconds: 12 }] };
 
-test("schema excludes raw logs, photos, and unrecognized metadata", () => {
-  assert.throws(() => feedback({ ...validFeedback(), photos: "private" }), HTTPError);
-  assert.throws(() => feedback({ ...validFeedback(), diagnostics: { ...validFeedback().diagnostics, events: [{ code: "raw_error", ageSeconds: 0 }] } }), HTTPError);
-  assert.throws(() => feedback({ ...validFeedback(), diagnostics: { ...validFeedback().diagnostics, osVersion: "Oliver's iPhone" } }), HTTPError);
-  assert.throws(() => feedback({ ...validFeedback(), source: "web" }), HTTPError);
-  assert.throws(() => telemetry({ ...limited(), installationId: crypto.randomUUID() }), HTTPError);
-  assert.throws(() => telemetry({ ...limited(), appVersion: "1.0" }), HTTPError);
-  assert.throws(() => telemetry({ ...limited(), mode: "full" }), HTTPError);
-  assert.throws(() => telemetry({ ...limited(), events: [{ name: "app_open", count: 101 }] }), HTTPError);
-  assert.throws(() => telemetry({ ...limited(), events: [{ name: "app_open", count: 0 }] }), HTTPError);
-  assert.throws(() => feedback({ ...validFeedback(), diagnostics: { ...validFeedback().diagnostics, osVersion: "26.0.12" } }), HTTPError);
-});
+// Fixtures represent data retained from earlier builds; production has no writers.
+async function seedFeedback(runtime = mf, message = "Camera closes when tapping save", createdAt = Date.now()) {
+  const db = await runtime.getD1Database("DB"), id = crypto.randomUUID();
+  await db.prepare("INSERT INTO feedback (id, submission_id, created_at, updated_at, source, category, message, diagnostics_json) VALUES (?, ?, ?, ?, 'ios', 'bug', ?, ?)")
+    .bind(id, crypto.randomUUID(), createdAt, createdAt, message, JSON.stringify(legacyDiagnostics)).run();
+  return id;
+}
+async function seedTelemetry(runtime = mf, createdAt = Date.now()) {
+  const db = await runtime.getD1Database("DB"), batch = crypto.randomUUID(), day = new Date(createdAt).toISOString().slice(0, 10);
+  await db.prepare("INSERT INTO telemetry_batches VALUES (?, ?, ?)").bind(batch, crypto.randomUUID(), createdAt).run();
+  await db.prepare("INSERT INTO telemetry_daily VALUES (?, 'full', 'app_open', 2)").bind(day).run();
+  await db.prepare("INSERT INTO telemetry_full (batch_id, created_at, installation_hash, app_version, os_version, device_class, event_name, count) VALUES (?, ?, ?, '1.0', '26.0', 'phone', 'app_open', 2)")
+    .bind(batch, createdAt, "a".repeat(64)).run();
+}
 
 test("public hosts cannot expose admin HTML, assets, APIs, or encoded routes", async () => {
   for (const host of ["selfiejourney.com", "api.selfiejourney.com", "selfiejourney.workers.dev", "preview.example.com"]) {
@@ -95,71 +92,75 @@ test("every admin route requires verified Access identity", async () => {
 });
 
 test("missing Access configuration fails closed", async () => {
-  const runtime = await createRuntime(1000, "");
+  const runtime = await createRuntime("");
   try { assert.equal((await runtime.dispatchFetch("https://admin.selfiejourney.com/", { headers: { "cf-access-jwt-assertion": token } })).status, 503); }
   finally { await runtime.dispose(); }
 });
 
-test("feedback rejects malformed, oversized, non-JSON, and foreign-origin bodies", async () => {
-  assert.equal((await submit("/v1/feedback", { ...validFeedback(), message: " " })).status, 400);
-  assert.equal((await submit("/v1/feedback", { ...validFeedback(), message: "x".repeat(40000) })).status, 413);
-  assert.equal((await submit("/v1/feedback", validFeedback(), { "Content-Type": "text/plain" })).status, 415);
-  assert.equal((await submit("/v1/feedback", validFeedback(), { Origin: "https://evil.example" })).status, 403);
-  const malformed = await mf.dispatchFetch("https://api.selfiejourney.com/v1/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{" });
-  assert.equal(malformed.status, 400);
-  const invalidEncoding = await mf.dispatchFetch("https://api.selfiejourney.com/v1/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: new Uint8Array([0xff, 0xfe]) });
-  assert.equal(invalidEncoding.status, 400);
-});
-
-test("public browser CORS supports errors and never grants a foreign origin", async () => {
-  const publicOrigin = "https://selfiejourney.com";
-  const error = await submit("/v1/feedback", {}, { Origin: publicOrigin });
-  assert.equal(error.status, 400); assert.equal(error.headers.get("Access-Control-Allow-Origin"), publicOrigin);
-  const denied = await submit("/v1/feedback", validFeedback(), { Origin: "https://evil.example" });
-  assert.equal(denied.status, 403); assert.equal(denied.headers.get("Access-Control-Allow-Origin"), null);
-  const preflight = await mf.dispatchFetch("https://api.selfiejourney.com/v1/feedback", { method: "OPTIONS", headers: { Origin: publicOrigin, "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "Content-Type" } });
-  assert.equal(preflight.status, 204); assert.equal(preflight.headers.get("Access-Control-Allow-Origin"), publicOrigin);
-});
-
-test("feedback retries return one receipt and one stored row", async () => {
-  const input = validFeedback();
-  const responses = await Promise.all([submit("/v1/feedback", input), submit("/v1/feedback", input)]);
-  const receipts = await Promise.all(responses.map(response => response.json() as Promise<{ receiptId: string }>));
-  assert.equal(receipts[0]!.receiptId, receipts[1]!.receiptId);
+test("retired collection routes reject every method, body, and origin without storage", async () => {
   const db = await mf.getD1Database("DB");
-  const result = await db.prepare("SELECT COUNT(*) AS count FROM feedback WHERE submission_id = ?").bind(input.submissionId).first<{ count: number }>();
-  assert.equal(result!.count, 1);
-  const detailResponse = await admin(`/api/admin/feedback/${receipts[0]!.receiptId}`);
-  const detail = await detailResponse.json() as Record<string, unknown>;
-  assert.equal(detail.message, input.message); assert.deepEqual(detail.diagnostics, input.diagnostics);
+  for (const host of ["selfiejourney.com", "api.selfiejourney.com"]) {
+    for (const path of ["/v1/feedback", "/v1/telemetry"]) {
+      for (const method of ["POST", "PUT", "GET", "OPTIONS"]) {
+        const response = await mf.dispatchFetch(`https://${host}${path}`, {
+          method, headers: { "Content-Type": "text/plain", "Origin": "https://evil.example" },
+          ...(method === "POST" || method === "PUT" ? { body: "malformed and private payload" } : {}),
+        });
+        assert.equal(response.status, 410, `${method} ${host}${path}`);
+        assert.equal((await response.json() as { error: { code: string } }).error.code, "collection_retired");
+        assert.equal(response.headers.get("Access-Control-Allow-Origin"), null);
+        assert.equal(response.headers.get("Cache-Control"), "no-store");
+      }
+    }
+  }
+  for (const table of ["feedback", "telemetry_batches", "telemetry_daily", "telemetry_full"]) {
+    assert.equal((await db.prepare(`SELECT COUNT(*) AS count FROM ${table}`).first<{ count: number }>())?.count, 0);
+  }
 });
 
-test("limited batches store only anonymous aggregates and deduplicate concurrent retries", async () => {
-  const input = limited();
-  assert.equal((await submit("/v1/telemetry", { ...input, installationId: crypto.randomUUID() })).status, 400);
-  const responses = await Promise.all([submit("/v1/telemetry", input), submit("/v1/telemetry", input)]);
-  assert(responses.every(response => response.status === 202));
-  for (const response of responses) assert.deepEqual(await response.json(), { accepted: 2 });
-  const db = await mf.getD1Database("DB");
-  const count = await db.prepare("SELECT count FROM telemetry_daily WHERE mode = 'limited' AND event_name = 'app_open'").first<{ count: number }>();
-  assert.equal(count!.count, 2);
-  assert.equal((await db.prepare("SELECT COUNT(*) AS count FROM telemetry_full WHERE batch_id = ?").bind(input.batchId).first<{ count: number }>())!.count, 0);
-  const receipt = await db.prepare("SELECT * FROM telemetry_batches WHERE batch_id = ?").bind(input.batchId).first();
-  assert.deepEqual(Object.keys(receipt!).sort(), ["batch_id", "created_at", "receipt_id"]);
+test("retired handlers never read bodies or access bindings, even if both are unavailable", async () => {
+  const unavailableEnv: WorkerEnv = {
+    get DB(): never { throw new Error("must not access storage"); },
+    get ASSETS(): never { throw new Error("must not proxy a rejected body"); },
+    get FEEDBACK_RATE_LIMITER(): never { throw new Error("must not process an IP"); },
+    get TELEMETRY_RATE_LIMITER(): never { throw new Error("must not process an IP"); },
+    get ACCESS_TEAM_DOMAIN(): never { throw new Error("must not call a service"); },
+    get ACCESS_AUDIENCE(): never { throw new Error("must not call a service"); },
+    get ADMIN_EMAIL(): never { throw new Error("must not call a service"); },
+  };
+  for (const path of ["/v1/feedback", "/v1/telemetry"]) {
+    const request = new Request<unknown, IncomingRequestCfProperties>(`https://api.selfiejourney.com${path}`, { method: "POST", body: "private" });
+    for (const property of ["body", "json", "text", "arrayBuffer", "formData", "blob"]) {
+      Object.defineProperty(request, property, { get() { throw new Error("must not read the payload"); } });
+    }
+    const response = await worker.fetch(request, unavailableEnv);
+    assert.equal(response.status, 410);
+    assert.equal(request.bodyUsed, false);
+  }
 });
 
-test("full telemetry hashes installation IDs and retains only validated context", async () => {
-  const installationId = crypto.randomUUID();
-  const input = { ...limited(), mode: "full", installationId, appVersion: "1.0", osVersion: "26.0", deviceClass: "phone" };
-  assert.equal((await submit("/v1/telemetry", input)).status, 202);
-  const db = await mf.getD1Database("DB");
-  const row = await db.prepare("SELECT * FROM telemetry_full WHERE batch_id = ?").bind(input.batchId).first();
-  assert.match(String(row!.installation_hash), /^[0-9a-f]{64}$/); assert(!JSON.stringify(row).includes(installationId));
-  assert(!Object.keys(row!).some(key => /ip|email/.test(key)));
+test("retirement response is readable by the old website but does not allow new submissions", async () => {
+  for (const method of ["POST", "OPTIONS"]) {
+    const response = await mf.dispatchFetch("https://api.selfiejourney.com/v1/feedback", {
+      method, headers: { Origin: "https://selfiejourney.com", "Access-Control-Request-Method": "POST" },
+    });
+    assert.equal(response.status, 410);
+    assert.equal(response.headers.get("Access-Control-Allow-Origin"), "https://selfiejourney.com");
+    assert.equal(response.headers.get("Access-Control-Allow-Methods"), null);
+  }
+});
+
+test("historical feedback remains readable only by the administrator", async () => {
+  const id = await seedFeedback();
+  const response = await admin(`/api/admin/feedback/${id}`);
+  assert.equal(response.status, 200);
+  const detail = await response.json() as Record<string, unknown>;
+  assert.equal(detail.message, "Camera closes when tapping save");
+  assert.deepEqual(detail.diagnostics, legacyDiagnostics);
 });
 
 test("admin pagination and search handle literal wildcards and parameterize SQL", async () => {
-  for (const message of ["literal 100% complete", "other completely different", "search quote ' OR 1=1 --"]) await submit("/v1/feedback", { ...validFeedback(), message });
+  for (const message of ["literal 100% complete", "other completely different", "search quote ' OR 1=1 --"]) await seedFeedback(mf, message);
   const search = await admin("/api/admin/feedback?q=%25");
   const found = await search.json() as { items: { id: string }[]; total: number };
   assert.equal(found.total, 1);
@@ -171,35 +172,27 @@ test("admin pagination and search handle literal wildcards and parameterize SQL"
 });
 
 test("admin mutations require same-origin CSRF headers", async () => {
-  const receipt = await (await submit("/v1/feedback", validFeedback())).json() as { receiptId: string };
-  const url = `https://admin.selfiejourney.com/api/admin/feedback/${receipt.receiptId}`;
+  const id = await seedFeedback();
+  const url = `https://admin.selfiejourney.com/api/admin/feedback/${id}`;
   const options = { method: "PATCH", headers: { "cf-access-jwt-assertion": token, "Content-Type": "application/json", "X-Requested-With": "SelfieJourneyAdmin" }, body: JSON.stringify({ status: "resolved" }) };
   assert.equal((await mf.dispatchFetch(url, options)).status, 403);
   assert.equal((await mf.dispatchFetch(url, { ...options, headers: { ...options.headers, Origin: "https://evil.example" } })).status, 403);
   const response = await mf.dispatchFetch(url, { ...options, headers: { ...options.headers, Origin: "https://admin.selfiejourney.com" } });
-  assert.equal(response.status, 200); assert.deepEqual(await response.json(), { id: receipt.receiptId, status: "resolved" });
+  assert.equal(response.status, 200); assert.deepEqual(await response.json(), { id, status: "resolved" });
 });
 
-test("overview returns actual totals, zero-filled dates, and bounded detail range", async () => {
+test("overview returns historical totals, zero-filled dates, and bounded detail range", async () => {
+  await seedTelemetry();
   const response = await admin("/api/admin/overview?days=7");
   const data = await response.json() as { rangeDays: number; daily: unknown[]; totals: { events: number; feedback: number; fullInstallations: number }; retention: Record<string, number> };
   assert.equal(response.status, 200); assert.equal(data.rangeDays, 7); assert.equal(data.daily.length, 7);
-  assert(data.totals.feedback > 0); assert.equal(data.totals.events, 4); assert.equal(data.totals.fullInstallations, 1);
+  assert(data.totals.feedback > 0); assert.equal(data.totals.events, 2); assert.equal(data.totals.fullInstallations, 1);
   assert.equal(data.retention.diagnosticsDays, 30);
   assert.equal((await admin("/api/admin/overview?days=1000")).status, 400);
 });
 
-test("native rate limiter rejects repeated submissions", async () => {
-  const runtime = await createRuntime(1);
-  try {
-    assert.equal((await submit("/v1/feedback", validFeedback(), {}, runtime)).status, 201);
-    const second = await submit("/v1/feedback", validFeedback(), {}, runtime);
-    assert.equal(second.status, 429); assert.equal(second.headers.get("Retry-After"), "60");
-  } finally { await runtime.dispose(); }
-});
-
 test("real static assets keep the admin root at its URL and cannot bypass authorization", async () => {
-  const runtime = await createRuntime(1000, audience, true);
+  const runtime = await createRuntime(audience, true);
   try {
     for (const path of ["/", "/admin/", "/admin/index.html", "/admin/admin.js"]) {
       const blocked = await runtime.dispatchFetch(`https://admin.selfiejourney.com${path}`);
@@ -220,14 +213,11 @@ test("retention hides expired diagnostics immediately and cron removes expired s
     const now = Date.now(), day = 86400000;
     const ids: string[] = [];
     for (const days of [7, 31, 181]) {
-      const receipt = await (await submit("/v1/feedback", validFeedback(), {}, runtime)).json() as { receiptId: string };
-      ids.push(receipt.receiptId);
-      await db.prepare("UPDATE feedback SET created_at = ? WHERE id = ?").bind(now - days * day, receipt.receiptId).run();
+      ids.push(await seedFeedback(runtime, "Legacy report", now - days * day));
     }
     const beforeCleanup = await runtime.dispatchFetch(`https://admin.selfiejourney.com/api/admin/feedback/${ids[1]}`, { headers: { "cf-access-jwt-assertion": token } });
     assert.equal((await beforeCleanup.json() as Record<string, unknown>).diagnostics, undefined);
-    const old = { ...limited(), mode: "full", installationId: crypto.randomUUID(), appVersion: "1.0", osVersion: "26.0", deviceClass: "phone" };
-    await submit("/v1/telemetry", old, {}, runtime);
+    await seedTelemetry(runtime);
     await db.prepare("UPDATE telemetry_full SET created_at = ?").bind(now - 31 * day).run();
     await db.prepare("UPDATE telemetry_batches SET created_at = ?").bind(now - 366 * day).run();
     await db.prepare("INSERT INTO telemetry_daily VALUES (?, 'limited', 'app_open', 1)").bind(new Date(now - 366 * day).toISOString().slice(0, 10)).run();
