@@ -1,0 +1,16 @@
+.DS_Store
+DerivedData/
+build/
+*.xcuserstate
+xcuserdata/
+*.xcresult
+
+# Cloudflare and local development
+node_modules/
+.wrangler/
+web/dist/
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*

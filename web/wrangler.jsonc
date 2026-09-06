@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "selfiejourney",
+  "account_id": "eef43ffb7af8b4668e251f542e27d73d",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-06",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "selfiejourney.com", "custom_domain": true },
+    { "pattern": "api.selfiejourney.com", "custom_domain": true },
+    { "pattern": "admin.selfiejourney.com", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "vars": {
+    "ACCESS_TEAM_DOMAIN": "strikethrough.cloudflareaccess.com",
+    "ACCESS_AUDIENCE": "cf33a4b98f224e1cec281b323de9ff3ac3ddb19b9d13676a006f560b1c054736",
+    "ADMIN_EMAIL": "oliver@strikethrough.com"
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "selfiejourney-data",
+    "database_id": "65e6dddd-a004-4b7a-bb38-f4f9f05362d9",
+    "migrations_dir": "migrations"
+  }],
+  "ratelimits": [
+    { "name": "FEEDBACK_RATE_LIMITER", "namespace_id": "940061001", "simple": { "limit": 5, "period": 60 } },
+    { "name": "TELEMETRY_RATE_LIMITER", "namespace_id": "940061002", "simple": { "limit": 60, "period": 60 } }
+  ],
+  "observability": {
+    "enabled": true,
+    "redact_query_string": true,
+    "head_sampling_rate": 0.1,
+    "logs": { "enabled": true, "invocation_logs": false },
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  },
+  "triggers": { "crons": ["17 4 * * *"] }
+}
