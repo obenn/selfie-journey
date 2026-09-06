@@ -1,6 +1,6 @@
 # Selfie Journey — App Store metadata
 
-Updated September 6, 2026 from the shipped 1.0 source, privacy manifest, service implementation, and the current App Store Connect session. The status below separates verified saved fields from entries still awaiting verification or upload. The app has not been submitted for App Store review in this session.
+Updated September 6, 2026 from the shipped 1.0 source, privacy manifest, service implementation, and the current App Store Connect session. The status below separates verified saved fields from entries still awaiting verification or upload. The app has not been submitted for public App Store release review. Build 2 has separately been submitted to TestFlight beta review.
 
 ## Current completion status
 
@@ -10,23 +10,25 @@ Updated September 6, 2026 from the shipped 1.0 source, privacy manifest, service
 | Privacy URLs | Policy and Choices both saved as https://selfiejourney.com/privacy/ |
 | Privacy draft | **Data Not Collected** saved and preview verified for the replacement build 2; not yet published |
 | Version metadata | New 1,853-character no-collection description saved (Save disabled after success); promotional text, keywords, marketing/support URLs, and copyright also saved |
-| Review fields | Currently blank in Connect; Sign-in Required currently Yes. Enter the actual contact details, set No, and save together. A previous attempt confirmed that a valid review phone number is required; none has been provided |
-| Build | Signed **1.0 (2)** archive succeeded at `build/releases/SelfieJourney-1.0-2.xcarchive`; its manifest is empty, tracking is off, and old API/collection code is absent. Export failed: `exportArchive Failed to Use Accounts`, missing Xcode credential keys. **Build 2 is not uploaded or selected; build 1 remains selected** |
+| Beta review fields | Actual review contact is complete and saved privately; Sign-in Required = No. New beta description and build-2 review notes saved. The phone number is intentionally absent from the repository |
+| App Store review fields | Distribution-form contact/notes were previously incomplete; recheck separately before a public App Store submission. Use the contact already provided rather than asking for it again |
+| Build | **1.0 (2)** signed, uploaded through Xcode Organizer, processed, and submitted to TestFlight review. The earlier CLI failure is resolved for delivery. The public App Store draft's build selection remains separate and must be verified before release |
 | App icon | Connect's icon preview verified against the bundled icon |
 | Native verification | Build-2 iPhone run: 49 unit and 6 UI tests; iPad run: 1 onboarding UI test; zero failures |
 | Website/service | No-collection website and retired intake deployed at 18:33:58 UTC, deployment `8686d2acd95c4131b412ea3600c3a3aa`; public pages, 410 responses, and admin protection verified |
-| Current interruption | Safari/Mac locked. Unlock was requested; it remained locked when checked two minutes later |
+| TestFlight external | Existing group: **1 tester, 1 build**, build 2 **Waiting for Review**; automatic tester notification enabled. Existing public link: https://testflight.apple.com/join/ucGAbHsd; testers cannot join until the group has an approved build |
+| TestFlight internal | Build 2 added automatically; 0 testers. Account-owner invitation awaits specific recipient authorization; none sent |
+| Previous build | Build 1 is expired in TestFlight |
 | Screenshots | Six native build-2 screenshots are ready locally: iPhone 1320 × 2868 and iPad 2064 × 2752 opaque PNGs. **Connect still has the earlier 3 iPhone + 1 iPad screenshots; none of the replacement set is confirmed uploaded** |
 
-Next steps when the Mac is unlocked:
+Public App Store release work still remaining:
 
-1. Retry export/upload from the existing signed build-2 archive. If Xcode still reports missing account credentials, restore the Apple account session in Xcode before retrying; do not change the bundle ID or rebuild merely to change the number.
-2. After Apple processes build 2, replace the selected build 1 with build 2.
-3. Replace the earlier screenshots with the three verified build-2 images for each device class, then verify all six in Connect.
-4. Enter the actual review contact phone/name/email and review notes, set Sign-in Required to No, and save together. The phone requirement previously blocked this save.
-5. Verify the Data Not Collected draft against the selected build 2 before publishing privacy details or submitting the app for review.
+1. Verify that the Distribution draft selects build 2 rather than the earlier binary.
+2. Replace the earlier screenshots with the three verified build-2 images for each device class, then verify all six in Connect.
+3. Complete/recheck the separate App Store review contact and notes, using the contact already supplied; set Sign-in Required to No.
+4. Verify and publish the Data Not Collected label before submitting the public App Store release.
 
-**Neither the privacy label nor a new beta has been published.** The saved description alone does not replace the uploaded app binary.
+**TestFlight is already submitted and Waiting for Review.** The steps above concern the public App Store listing and do not block the beta submission. The privacy label remains unpublished. For internal invitations and external approval, see [TestFlight status](TESTFLIGHT.md).
 
 ## Store copy
 
@@ -82,13 +84,13 @@ portrait,dailyphoto,diary,timelapse,streak,memories,camera,face,aging,lookback,h
 | Privacy choices URL | https://selfiejourney.com/privacy/ — saved |
 | App Store Connect app ID | 6809197003 |
 | Bundle ID | com.strikethrough.PicaDay — preserve |
-| Version/build | Replace the currently selected 1.0 (1) with the no-collection 1.0 (2) after upload and processing |
+| Version/build | Build 2 is uploaded and in TestFlight review; verify the separate App Store Distribution draft selects it before public release |
 | Price | Free; user explicitly requested this |
 | In-app purchases/subscriptions | None implemented |
-| Sign-in required | Must be No; current Connect review form is reset to Yes and awaits completion |
+| Sign-in required | No in saved TestFlight review information; verify the separate App Store review form before public release |
 | Copyright | 2026 Oliver Benning — saved |
-| Review name/email | Oliver Benning / oliver@strikethrough.com — must be re-entered with a valid phone number |
-| Review phone | Use the user's actual number if already supplied in Connect; otherwise leave for the user |
+| Review name/email | Oliver Benning / oliver@strikethrough.com — complete and saved for TestFlight |
+| Review phone | Provided and saved privately in Connect; do not copy it into the repository |
 | Review notes | See [TESTFLIGHT.md](TESTFLIGHT.md), “Beta App Review notes”; also suitable for the initial App Store review |
 | App icon | SelfieJourney/Assets.xcassets/AppIcon.appiconset/icon.png; shipped opaque 1024×1024 icon bundled in uploaded build; Connect preview matches |
 | Screenshots | Three verified build-2 screenshots per device class under docs/app-store/iphone and docs/app-store/ipad. Connect still has the earlier 3 iPhone + 1 iPad set; replacements not uploaded |
@@ -97,13 +99,13 @@ Do not invent copyright ownership wording, business/trader status, legal contact
 
 ## App privacy answers — build 2
 
-**Data Not Collected** is saved in App Store Connect as a draft, with the preview verified. It must describe the final **1.0 (2)** binary, not the earlier uploaded build 1. Publication has not yet been confirmed.
+**Data Not Collected** is saved in App Store Connect as a draft, with the preview verified. It describes **1.0 (2)**, now uploaded and in TestFlight review, rather than the expired build 1. The store privacy label has not been published.
 
 The replacement app has no analytics client, installation identifier, local diagnostic ring, feedback form, or collection transport. `NSPrivacyTracking` is false and `NSPrivacyCollectedDataTypes` is empty. App-only UserDefaults remain declared with reason `CA92.1`. User photos and notes remain local; optional backups use the user's private iCloud Drive. On-device camera analysis is not developer collection.
 
 GitHub support is an ordinary external browser link with no attached identifiers, device details, logs, or app content. Voluntary issues are governed by GitHub's privacy policy and can be public. The website's ordinary Cloudflare requests and retained historical build-1 records are explained separately in the privacy policy. See Apple's [App privacy details guidance](https://developer.apple.com/app-store/app-privacy-details/) for the collection boundary and Apple-service distinction.
 
-Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints now reject old-client submissions with verified 410 responses. The selected binary still needs replacement with build 2 before release.
+Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints now reject old-client submissions with verified 410 responses. Build 2 is now in TestFlight review; the separate Distribution draft must use build 2 before a public App Store submission.
 
 ## Review notes — build 2
 

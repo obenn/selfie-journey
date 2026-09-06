@@ -1,6 +1,6 @@
 # Selfie Journey operations
 
-This document describes the no-collection implementation for **1.0 build 2**. The Worker/website replacement is live as deployment `8686d2acd95c4131b412ea3600c3a3aa`; build 2 has a signed archive but its Apple upload is blocked by Xcode account credentials while the Mac is locked. See [deployment history](DEPLOYMENT.md) and [release status](APP_STORE.md).
+This document describes the no-collection implementation for **1.0 build 2**. The Worker/website replacement is live as deployment `8686d2acd95c4131b412ea3600c3a3aa`; build 2 was uploaded successfully through Xcode Organizer and is Waiting for Review for external TestFlight testing. See [deployment history](DEPLOYMENT.md) and [release status](APP_STORE.md).
 
 ## Surfaces
 

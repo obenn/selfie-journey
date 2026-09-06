@@ -13,9 +13,9 @@ Verified after deployment:
 - Anonymous admin access redirects to Cloudflare Access (302).
 - Workers.dev and preview URLs remain disabled; cron `17 4 * * *` is preserved.
 
-Local checks passed 12 backend runtime tests, type checking, packaging, HTML/local-asset checks, and public/admin JavaScript syntax checks. Native build-2 validation passed 49 unit tests, 6 iPhone UI tests, and 1 iPad UI test. Its signed archive succeeded, but **build 2 has not uploaded to Apple**: export failed with `exportArchive Failed to Use Accounts` and missing Xcode credential keys while the Mac was locked. The website deployment does not publish the native app.
+Local checks passed 12 backend runtime tests, type checking, packaging, HTML/local-asset checks, and public/admin JavaScript syntax checks. Native build-2 validation passed 49 unit tests, 6 iPhone UI tests, and 1 iPad UI test. Its signed archive succeeded. A later Xcode Organizer distribution successfully uploaded **1.0 (2)** after CLI account-credential errors; the build is now **Waiting for Review** for external TestFlight testing. The website deployment itself does not publish the native app.
 
-The GitHub repository remains private until its owner changes visibility. No public TestFlight invitation URL exists. See the exact remaining release steps in [App Store status](APP_STORE.md) and [TestFlight](TESTFLIGHT.md).
+The GitHub repository remains private until its owner changes visibility. The existing public TestFlight invitation is https://testflight.apple.com/join/ucGAbHsd; the latest build must pass beta review before it is available externally. See the remaining release steps in [App Store status](APP_STORE.md) and [TestFlight](TESTFLIGHT.md).
 
 ## Original service deployment — historical record
 

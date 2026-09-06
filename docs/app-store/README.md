@@ -15,7 +15,7 @@ The app icon is supplied through the uploaded app build from `SelfieJourney/Asse
 
 ## Upload status
 
-The replacement six-image set is ready locally but **not yet uploaded to App Store Connect**. Connect currently retains the earlier three iPhone screenshots and one iPad screenshot. The Mac locked before replacement could finish. Once unlocked, replace that set with all six files below and verify their rendered previews. The existing icon preview already matches the bundled app icon.
+The replacement six-image set is ready locally but **not yet uploaded to App Store Connect**. Connect currently retains the earlier three iPhone screenshots and one iPad screenshot. The earlier session paused before replacement could finish. Replace that set with all six files below and verify their rendered previews as part of the public App Store listing work. This is separate from build 2’s already-submitted TestFlight review. The existing icon preview already matches the bundled app icon.
 
 ## Capture and verification
 
