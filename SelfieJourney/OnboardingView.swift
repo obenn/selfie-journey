@@ -93,19 +93,19 @@ struct OnboardingView: View {
             .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 13) {
-                Eyebrow(text: "A PORTRAIT OF YOUR LIFE")
-                Text("Meet your\nfuture self.")
-                    .font(JourneyTheme.serif(45)).tracking(-1.5)
+                Eyebrow(text: "DAILY SELFIES. REAL CHANGES.")
+                Text("One selfie a day.\nWatch yourself change.")
+                    .font(JourneyTheme.serif(38)).tracking(-1.2)
                     .accessibilityIdentifier("onboarding.welcome")
-                Text("One portrait. A few seconds. A little more of your story, every day.")
+                Text("Take a selfie each day, using face guides to keep your framing consistent. Turn your photos into a time-lapse video and see how you change with age, month by month and year by year.")
                     .font(.body).foregroundStyle(JourneyTheme.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
             VStack(alignment: .leading, spacing: 15) {
-                welcomeBenefit("viewfinder", "A familiar frame, with live camera guidance")
-                welcomeBenefit("flame", "A small daily streak to keep you going")
-                welcomeBenefit("play.rectangle", "The years, brought together in a film")
+                welcomeBenefit("viewfinder", "Face guides for a consistent daily selfie")
+                welcomeBenefit("flame", "Daily reminders and a streak to keep you going")
+                welcomeBenefit("play.rectangle", "Your own photos, together in a time-lapse video")
                 welcomeBenefit("icloud", "Dated backups in your personal iCloud Drive")
             }
             Text("iCloud backups are on by default when available. You can manage them and restore your story in your daily ritual settings.")
@@ -126,8 +126,8 @@ struct OnboardingView: View {
         VStack(alignment: .leading, spacing: 23) {
             VStack(alignment: .leading, spacing: 11) {
                 Eyebrow(text: "01 / YOUR SIGNATURE PORTRAIT")
-                Text("Find your frame.").font(JourneyTheme.serif(38)).tracking(-1)
-                Text("Pick a distance that feels like you. We'll shape your camera guide around it, every day.")
+                Text("Choose your selfie frame.").font(JourneyTheme.serif(38)).tracking(-1)
+                Text("Choose a distance from the camera. Use the same face guide each day for a steadier time-lapse.")
                     .foregroundStyle(JourneyTheme.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -148,8 +148,8 @@ struct OnboardingView: View {
             .frame(maxWidth: .infinity).padding(.vertical, 8).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 12) {
                 Eyebrow(text: "02 / YOUR DAILY MOMENT")
-                Text("Make it a ritual.").font(JourneyTheme.serif(38)).tracking(-1)
-                Text("After your coffee, or before the day winds down. When would you like a gentle nudge?")
+                Text("A moment for your selfie.").font(JourneyTheme.serif(38)).tracking(-1)
+                Text("After your coffee, or before the day winds down. When should we remind you to take your daily selfie?")
                     .foregroundStyle(JourneyTheme.secondary).fixedSize(horizontal: false, vertical: true)
             }
             VStack(spacing: 0) {
@@ -163,7 +163,7 @@ struct OnboardingView: View {
             }
             .background(JourneyTheme.surface, in: RoundedRectangle(cornerRadius: 25))
 
-            Label("Today's reminder disappears once your portrait is saved. One little nudge is enough.", systemImage: "checkmark.circle")
+            Label("Today's reminder disappears once your selfie is saved. Every day adds another frame to your time-lapse.", systemImage: "checkmark.circle")
                 .font(.subheadline).foregroundStyle(JourneyTheme.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 

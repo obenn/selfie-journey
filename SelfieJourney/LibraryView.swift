@@ -25,10 +25,10 @@ struct LibraryView: View {
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .tracking(2.4)
                         .foregroundStyle(JourneyTheme.secondary)
-                    Text("Your story.")
+                    Text("Your daily selfies.")
                         .font(JourneyTheme.serif(43))
                         .foregroundStyle(JourneyTheme.ink)
-                    Text(portraits.isEmpty ? "An ordinary day. A little piece of you." : "\(portraits.count) \(portraits.count == 1 ? "portrait" : "portraits"). Each one, a day worth keeping.")
+                    Text(portraits.isEmpty ? "Each daily photo becomes a frame in your time-lapse." : "\(portraits.count) \(portraits.count == 1 ? "portrait" : "portraits"). One frame for each day.")
                         .font(.system(size: 15))
                         .foregroundStyle(JourneyTheme.secondary)
                 }
@@ -78,7 +78,7 @@ struct LibraryView: View {
                             }
                         }
                     }
-                    Text("The small changes are the story.")
+                    Text("A record of how you change, one selfie at a time.")
                         .font(JourneyTheme.serif(19))
                         .italic()
                         .foregroundStyle(JourneyTheme.secondary)
@@ -116,17 +116,17 @@ struct LibraryView: View {
             .accessibilityHidden(true)
             .padding(.top, 30)
             VStack(spacing: 10) {
-                Text("A collection of you.")
+                Text("Your selfies, day by day.")
                     .font(JourneyTheme.serif(29))
                     .foregroundStyle(JourneyTheme.ink)
-                Text("Your portraits will find a home here.\nStart with who you are today.")
+                Text("Browse your daily photos here. Take your first selfie, then return tomorrow to add the next frame.")
                     .font(.system(size: 15))
                     .lineSpacing(5)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(JourneyTheme.secondary)
             }
             Button(action: onCapture) {
-                Label("Take your first portrait", systemImage: "camera")
+                Label("Take your first selfie", systemImage: "camera")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 24)

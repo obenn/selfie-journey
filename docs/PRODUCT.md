@@ -1,12 +1,26 @@
 # Selfie Journey: product and implementation
 
-## A small ritual with a long horizon
+## Daily selfies that become a time-lapse
 
-One ordinary portrait each day makes the small changes visible over years. The daily action should take seconds; the reward is a growing record of a life. The tone is encouraging, with no score for appearance. A streak measures showing up, and the collection remains valuable when a streak ends.
+**One selfie a day. Watch yourself change.**
+
+The app has one purpose: help someone take a selfie every day with consistent face framing, then turn those saved photos into a time-lapse video of how they change with age. Face guides and a previous-photo overlay help at capture time. Months and years of actual photos become the record; a small daily habit makes that collection possible.
+
+The tone is encouraging, with no score for appearance. A streak measures showing up, and the collection remains valuable when a streak ends.
+
+### Copy principles
+
+- State the action and outcome together: take a daily selfie, keep the framing similar, make a time-lapse showing change over months and years.
+- Lead with the shared headline above. Use concrete words such as selfie, face guides, daily photos, and time-lapse video before introducing warmer language about memories.
+- Explain that guides help users line up the shot. Do not promise automatic alignment, correction after capture, or perfectly matched photos.
+- Say that the video uses photos the user actually took. Avoid wording that implies a prediction, simulated aging, or a generated older face.
+- Keep completely free/no subscriptions and no app data collection explicit. Describe optional backups as the user's private iCloud Drive storage.
+
+This copy revision is being prepared for build 3. The currently uploaded build 2 remains Waiting for Review; see [release status](TESTFLIGHT.md) for verified distribution facts.
 
 Warm paper, sage, terracotta, restrained serif headlines, native SF Symbols, and subtle haptics frame the journal. The camera uses an uncluttered dark canvas. The rest of the app follows system appearance, with native light and dark color variants.
 
-## Shipped experience
+## Implemented experience
 
 ### First-open setup and framing
 

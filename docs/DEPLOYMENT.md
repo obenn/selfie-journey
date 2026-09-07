@@ -1,8 +1,23 @@
-# Deployment history — 6 September 2026
+# Deployment history
 
-## No-collection replacement — live
+## Clear daily-selfie purpose and refreshed screenshots — live
 
-The replacement Worker and website were deployed successfully at **18:33:58 UTC on September 6, 2026**, deployment ID **`8686d2acd95c4131b412ea3600c3a3aa`**.
+The current website was deployed at **00:12:34 UTC on September 7, 2026** (**20:12:34 EDT on September 6**), deployment **`a220c401-cf84-464e-ba93-170405040f3f`**, Worker version **`98be3939-40f6-4d3b-ac65-8adfc77891df`**, serving 100% of traffic.
+
+The shared headline is **“One selfie a day. Watch yourself change.”** The page now explains daily selfies, face-alignment guides before capture, and making a time-lapse video of real changes over months and years. Hero artwork, feature steps, support/privacy language, footers, and search/social metadata use the same concrete purpose. Refreshed native app screenshots include the current “Take today’s selfie” button. The website retains **Completely free. No subscriptions.** and **Coming soon** while external TestFlight review is pending.
+
+Post-deployment verification confirmed:
+
+- Root, privacy, and support return 200 with the current copy; support has external GitHub links and no submission form.
+- `/assets/today.jpg` (690 × 1500) and `/assets/poses.jpg` (552 × 1200) return 200 and match the local release assets byte for byte.
+- Retired feedback and telemetry intake still return 410; anonymous admin requests redirect to Cloudflare Access and public admin paths return 404.
+- Worker observability, Workers.dev, and preview URLs remain disabled; the existing daily retention cron is unchanged.
+
+The Wrangler package build passed. Temporary asset-upload credentials were removed after verification. Backend source, resource bindings, and native release status were unchanged by this website deployment.
+
+## No-collection replacement — September 6, 2026
+
+The replacement Worker and website were deployed successfully at **18:33:58 UTC on September 6, 2026**, deployment **`25b876f1-e1bd-4353-a997-1fb965456dd4`**, Worker version **`8686d2ac-d95c-4131-b412-ea3600c3a3aa`**.
 
 The website now uses external GitHub support links and explains the no-collection build, private iCloud backups, ordinary website requests, and historical retention. Former intake is retired; protected historical administration and cleanup remain. Worker observability is disabled in the deployment response.
 

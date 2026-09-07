@@ -22,8 +22,8 @@ struct RitualSettingsView: View {
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
                         Image(systemName: "sun.horizon").font(.system(size: 38, weight: .ultraLight)).foregroundStyle(JourneyTheme.accent)
-                        Text("A small ritual.\nA remarkable story.").font(JourneyTheme.serif(32)).tracking(-0.7)
-                        Text("After your coffee. Before you head out. Find a moment that's already yours.")
+                        Text("A selfie a day.\nA time-lapse of you.").font(JourneyTheme.serif(32)).tracking(-0.7)
+                        Text("Make a daily selfie part of your routine. Watch months and years of change come together in a video.")
                             .font(.subheadline).foregroundStyle(JourneyTheme.secondary)
                     }.padding(.vertical, 12).listRowBackground(Color.clear)
                 }
@@ -51,7 +51,7 @@ struct RitualSettingsView: View {
                                 Text("Choose how much of you fills the portrait. Your viewfinder and live positioning advice will follow this frame.")
                                     .font(.subheadline).foregroundStyle(JourneyTheme.secondary)
                                 PoseSelectionView(selection: $selectedPose)
-                                Label("For the smoothest lookback, stick with the same frame and a familiar spot.", systemImage: "sparkles")
+                                Label("For a steadier time-lapse, use the same camera distance, face position, and familiar spot.", systemImage: "sparkles")
                                     .font(.footnote).foregroundStyle(JourneyTheme.secondary)
                             }
                             .padding(24).frame(maxWidth: 560).frame(maxWidth: .infinity)
@@ -86,14 +86,14 @@ struct RitualSettingsView: View {
                     LabeledContent("Longest streak", value: "\(StreakCalculator.longestStreak(dates: portraitDates)) days")
                     Label("Your private portrait collection", systemImage: "lock.shield")
                 } header: { Text("YOUR STORY, YOURS TO KEEP") } footer: {
-                    Text("Face and lighting analysis stays on your device. Backups use your personal iCloud Drive. Face guidance doesn't identify you. Export a film or share portraits anytime. Deleting the app removes its local journal; completed iCloud backups can restore missing days.")
+                    Text("Face and lighting analysis stays on your device. Backups use your personal iCloud Drive. Face guidance doesn't identify you. Export a time-lapse video or share portraits anytime. Deleting the app removes its local journal; completed iCloud backups can restore missing days.")
                 }
                 Section {
                     HStack {
                         Spacer()
                         VStack(spacing: 6) {
                             Text("Selfie Journey").font(.system(size: 22, weight: .semibold, design: .rounded)).tracking(-0.7)
-                            Text("A little, every day.  ·  Version 1.0").font(.caption2).foregroundStyle(JourneyTheme.secondary)
+                            Text("One selfie a day.  ·  Version 1.0").font(.caption2).foregroundStyle(JourneyTheme.secondary)
                         }
                         Spacer()
                     }.listRowBackground(Color.clear)
@@ -154,14 +154,14 @@ struct PortraitGuideView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
-                    Text("Just as you are.").font(JourneyTheme.serif(38)).tracking(-1)
-                    Text("You don't need a perfect portrait. A little consistency is what makes your lookback magical.")
+                    Text("Same frame.\nReal changes.").font(JourneyTheme.serif(38)).tracking(-1)
+                    Text("Keep your face in a similar position each day. Consistent framing makes it easier to see how you change when you play your selfies as a time-lapse.")
                         .foregroundStyle(JourneyTheme.secondary)
-                    tip("01", "Find your light", "Face a window, with the light in front of you. A simple background lets you be the story.", "sun.max")
+                    tip("01", "Find your light", "Face a window, with the light in front of you. A simple background keeps the focus on your face.", "sun.max")
                     tip("02", "Meet the guide", "Pick your favorite framing distance in Your daily ritual. Hold your phone at eye level, center your face in the oval, and rest your eyes along the dotted line. Live hints help with distance, position, head angle, and light.", "viewfinder")
                     tip("03", "Echo yesterday", "After your first portrait, turn on the ghost overlay. Match your eyes and shoulders to your previous photo.", "square.on.square")
                     tip("04", "Take a breath", "Use the three-second timer, relax your shoulders, and look into the lens. There's no need to smile unless you feel like it.", "timer")
-                    Text("Let the years change you. Keep this little moment the same.")
+                    Text("Keep your framing familiar. Let your photos show how you change with age.")
                         .font(JourneyTheme.serif(25)).italic().padding(.top, 12)
                 }.padding(27).frame(maxWidth: 560)
             }

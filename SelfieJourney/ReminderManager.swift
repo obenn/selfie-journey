@@ -129,8 +129,8 @@ final class ReminderManager {
         do {
             for (index, date) in dates.enumerated() {
                 let content = UNMutableNotificationContent()
-                content.title = "A little moment for future you"
-                content.body = "Take today's portrait. Your story is growing, one day at a time."
+                content.title = "Time for today's selfie"
+                content.body = "Match your framing and add one photo to your time-lapse. A few seconds each day show how you change over time."
                 content.sound = .default
                 content.threadIdentifier = "picaday.daily"
                 let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)

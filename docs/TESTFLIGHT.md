@@ -1,6 +1,6 @@
 # Selfie Journey — TestFlight release
 
-Updated September 6, 2026. **Selfie Journey 1.0 (2) uploaded successfully and is Waiting for Review for external TestFlight testing.** The existing external group contains one tester and build 2, with automatic notification enabled. Build 1 is expired. The internal group also has build 2 through automatic distribution, but has no testers yet.
+Updated September 6, 2026. **Selfie Journey 1.0 (3) is uploaded, processed, and available to the internal group’s two existing testers.** Connect lists it as Ready to Submit. **Build 2 remains Waiting for Review externally**; Apple permits only one build of version 1.0 in beta review at a time, so build 3 has not been submitted externally. The existing public link still cannot accept testers until the group has an approved build. Build 1 is expired.
 
 ## Current release status
 
@@ -8,69 +8,81 @@ Updated September 6, 2026. **Selfie Journey 1.0 (2) uploaded successfully and is
 | --- | --- |
 | App Store Connect record | Selfie Journey, app ID `6809197003` |
 | Bundle ID | `com.strikethrough.PicaDay` |
-| Uploaded version/build | **1.0 (2)**; processed successfully |
-| Signed archive | `build/releases/SelfieJourney-1.0-2.xcarchive` — verified, retained locally, gitignored |
-| Upload evidence | Xcode Organizer explicitly reported upload complete. Connect lists September 6 at approximately **3:21–3:22 PM America/Toronto** |
+| Latest uploaded version/build | **1.0 (3)**; upload and processing complete; status **Ready to Submit** |
+| Latest signed archive | `build/releases/SelfieJourney-1.0-3.xcarchive` — signed successfully, retained locally, gitignored |
+| Upload evidence | Xcode Organizer confirmed upload complete; Connect’s completed Build Uploads row lists **September 6, 8:14 PM America/Toronto** |
 | Upload method | Existing signed archive opened in Xcode Organizer; **App Store Connect** distribution, eligible for external testing |
 | Earlier upload failure | CLI retry still failed on stale account credential keys even after unlock; the valid active Xcode account and Organizer upload resolved delivery without rebuilding |
-| Native validation | 49 unit, 6 iPhone UI, and 1 iPad UI tests passed; archived manifest has no collected data and tracking off; old API host and collection code absent |
-| Beta information | No-collection beta description and build-2 review notes saved; complete review contact provided and saved privately; Sign-in Required = No |
+| Native validation | Build 3: 4 functional iPhone UI tests, 1 light iPhone capture test, and 1 iPad UI test passed. All six native screenshot assets refreshed. Build-2 baseline had 49 unit and 7 UI tests pass |
+| Beta information | New 1,044-character beta description and build-3 What to Test (1,434 characters) saved. Contact complete privately; Sign-in Required = No. Build-3 review notes remain prepared, not saved; build-2 review notes retained |
+| Build 3 distribution | Processed and automatically assigned internally. **Not submitted externally**: Connect blocks another build from version 1.0 until the current beta review is approved |
 | External group | Existing group: **1 tester, 1 build**, build **1.0 (2)**, **Waiting for Review**, 90-day testing window |
 | External notification | **Automatically notify testers** selected when submitting build 2 |
 | Public invitation link | Existing link: https://testflight.apple.com/join/ucGAbHsd. Connect warns that testers **cannot join until the group has an approved build** |
-| Internal group | Automatic distribution added build 2; **0 testers**. Account-owner invitation was not sent; specific recipient authorization is pending |
+| Internal group | **2 existing testers**, added manually by the user; build 3 assigned automatically and available for internal testing |
 | Previous build | **1.0 (1) Expired** |
-| Website | No-collection website is live, deployment `8686d2acd95c4131b412ea3600c3a3aa`; free/no-subscription copy preserved |
-| App Store-only work | Store privacy label remains a saved draft; replacement store screenshots are local and not yet uploaded. These do not block this submitted TestFlight beta |
+| Website | Clarity update live: deployment `a220c401-cf84-464e-ba93-170405040f3f`, Worker version `98be3939-40f6-4d3b-ac65-8adfc77891df`, September 7 at 00:12:34 UTC; free/no-subscription copy preserved |
+| App Store-only work | Distribution now selects build 3, saved and verified; store privacy label remains a draft and review fields are incomplete. All six build-3 screenshots uploaded and verified: 3 iPhone 6.9-inch and 3 iPad 13-inch. These are separate from TestFlight |
 
 ## Remaining TestFlight actions
 
-1. Await Apple's external beta review. Automatic notification is enabled, so existing external testers can receive the approved build without another manual distribution step. Verify the group's status changes to Testing/Ready to Test and the public link offers the build before advertising immediate installation.
-2. If the owner authorizes the pending internal invitation, add that eligible Connect account to the internal group and verify the invitation. No invitation has been sent yet. Internal testing does not require external beta review.
-3. Once the external build is available, verify the existing public invitation link and add that exact link to the website with accurate availability wording.
+1. Internal testers can use build 3 now. No additional internal invitation is pending.
+2. Await the current external review of build 2. Connect explicitly permits only one build of version 1.0 in beta review and says additional builds can be submitted once the submitted build is approved. Build 2’s review was preserved.
+3. After that gate clears, save the prepared build-3 review notes and submit build 3 externally. Its What to Test is already saved.
+4. Verify an approved build is installable through https://testflight.apple.com/join/ucGAbHsd before changing the website’s Coming soon wording to immediate beta availability.
 
 App Store screenshots, App Store version build selection, and publication of the store privacy label are separate App Store release work. They are not prerequisites for adding a processed build to a TestFlight group or submitting its beta review. TestFlight uses its own beta description, What to Test, feedback email, and review contact details; invitation screenshots are optional. [Apple's TestFlight information workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/) and [build statuses](https://developer.apple.com/help/app-store-connect/reference/app-uploads/app-build-statuses/).
 
-## Beta App Description
+## Beta copy — clarity update for build 3
 
-Selfie Journey is completely free, with no subscriptions or in-app purchases.
+The **Beta App Description and build-3 What to Test are saved**. Build-3 review notes remain prepared, not saved. Build 3 is processed and assigned internally; build 2 remains Waiting for Review externally and blocks another version-1.0 beta submission.
 
-One portrait a day. A little ritual. A life in motion. Capture yourself with a calm, native iPhone and iPad app, then watch those everyday moments become a beautiful lookback film.
+## Beta App Description — saved (1,044 characters)
 
-Choose your preferred framing, follow gentle on-device face and lighting guidance, and use your previous portrait as an alignment overlay. Set a daily reminder, keep your streak going, and add a few words to remember the day.
+One selfie a day. Watch yourself change.
 
-Your portraits and journal stay on your device, with optional backup to your private iCloud Drive. No separate Selfie Journey account is needed. The app collects no data: there are no analytics, tracking identifiers, or diagnostic uploads.
+Selfie Journey helps you take a daily selfie with consistent face framing, then make a time-lapse video that shows how you change over months and years. The video uses the photos you actually take.
 
-Have an idea or find a bug? Settings can open GitHub Issues in your browser. You choose what to post, and the app attaches no logs or personal data. Please leave private information out of public issues.
+Completely free. No subscriptions or in-app purchases.
 
-## What to Test
+Choose a portrait distance and use face guides, lighting advice, and a previous-photo overlay to line up each day's selfie. Set a daily reminder, build your streak, and keep an optional note with each photo.
 
-Selfie Journey is completely free. There are no subscriptions or in-app purchases.
+In Lookback, play your selfies in order, choose the pace, and create a time-lapse video once you have photos from at least two different days.
 
-Please try the daily portrait routine and tell us what feels great, confusing, or unreliable:
+Your photos and notes stay on your device, with optional backups to your private iCloud Drive. The app collects no data and needs no separate account. Face guidance and video creation happen on device.
 
-- Choose a pose and daily reminder time during setup. Check that each can be changed later in Settings.
-- Take a portrait in different lighting conditions. Try the framing guidance, previous-portrait overlay, and three-second timer. You can also choose an image using Library in the camera screen.
-- Save a portrait with an optional note, then retake it. There should be one portrait per day, with a same-day retake replacing that day's image.
-- Return on another day to build your streak. Once you have portraits from at least two days, try Lookback playback, pace and date options, and exporting a film.
-- Enable iCloud backup in Settings and check backup and restore using devices signed into the same Apple Account with iCloud Drive enabled.
-- Check the No data collected explanation in Settings and the external GitHub links. Confirm the app does not attach logs, device information, or journal content. If upgrading from build 1, verify portraits, reminders, and backups are preserved.
+For suggestions or issues, Settings can open GitHub in your browser. You choose what to post; the app attaches no logs or personal data. Please leave private information out of public issues.
 
-For issues, include what you were doing and what you expected. Please avoid putting private information in your message. Thank you for helping make this daily ritual better.
+## What to Test — saved for build 3 (1,434 characters)
 
-## Beta App Review notes — build 2
+Selfie Journey is completely free. No subscriptions or in-app purchases.
 
-Selfie Journey is a daily portrait journal for iPhone and iPad, supporting iOS/iPadOS 18 or later. It is completely free, with no subscriptions, in-app purchases, advertising, or paid feature gates. No separate account, demo credentials, or sign-in is required.
+This update makes the purpose clearer: take a selfie each day with similar face framing, then turn your real photos into a time-lapse of how you change over months and years.
 
-Complete onboarding by choosing a portrait frame and optional reminder time. From Today, grant camera permission to try live capture and framing guidance, or choose Library in the camera screen to import a user-selected photo through Apple's Photos picker. Save a portrait with an optional note. Saving another portrait on the same day replaces that day's image.
+- Go through setup, choose one of the four portrait distances, and set or skip a daily reminder. Tell us if the daily-selfie and time-lapse flow is clear.
+- Tap Take today's selfie on Today. Try the face and eye-line guides, position and lighting advice, previous-photo overlay, and three-second timer. You can also import a photo using Library.
+- Save a selfie with an optional note, then retake it. The new photo should replace today's earlier photo rather than add another day.
+- Return on a different day. Check your streak and Journal, then open Lookback. With photos from at least two days, try the pace/date options and Create time-lapse video. Check that the exported video follows your actual photos in order.
+- Check iCloud backup and missing-day restore on devices using the same Apple Account with iCloud Drive enabled.
+- Check the No data collected message and optional GitHub links in Settings. The app should attach no photos, identifiers, or logs. Existing photos, reminders, and backups should remain after updating.
 
-Face, position, distance, and lighting guidance runs on device. The app does not identify people. Portraits and notes are stored locally. Optional iCloud Drive backups require iCloud Drive and available storage on the user's Apple Account; capture and the journal work without iCloud. We cannot access the user's private backups.
+For an issue, describe what happened and what you expected. Please keep private photos, notes, and other personal information out of public feedback.
 
-Journal shows saved portraits. Lookback can preview the collection; movie export requires portraits from at least two different days. A new installation therefore starts with an empty or one-frame state.
+## Beta App Review notes — proposed for build 3
 
-Build 2 removes the earlier feedback, diagnostics, and analytics implementation. The app collects no data, has no reporting identifier, and sends no analytics or log uploads. Settings can open GitHub Issues in the system browser without attaching content, identifiers, or logs. The user independently chooses whether to post on that external service.
+Selfie Journey is a daily selfie and time-lapse app for iPhone and iPad, supporting iOS/iPadOS 18 or later. Users take one selfie each day, use face guides to keep their framing similar, and turn the saved photos into a video showing changes over time. The video is made from actual user photos.
 
-Network-backed journal storage uses Apple's iCloud facilities. CryptoKit SHA-256 checks backup file integrity; the app implements no custom encryption. The privacy policy is https://selfiejourney.com/privacy/.
+Build 3 clarifies this daily-selfie → consistent-framing → time-lapse flow in the interface. The app is completely free, with no subscriptions, in-app purchases, advertising, or paid feature gates. No separate account, demo credentials, or sign-in is required.
+
+Complete onboarding by choosing a portrait distance and optional reminder time. On Today, tap Take today's selfie and grant camera permission to try live capture and framing advice. Library in the camera screen imports a user-selected photo through Apple's Photos picker. Save a selfie with an optional note. Another save on the same day replaces that day's photo.
+
+Face, position, distance, and lighting guidance runs on device and helps the user frame the photo before capture. Journal shows the saved daily photos. Open Lookback, titled Your time-lapse, to preview them in date order. Create time-lapse video becomes available with photos from at least two different days, so a new installation initially shows an empty or one-frame state.
+
+Photos and notes remain local. Optional iCloud Drive backups require an Apple Account with iCloud Drive and available storage; capture and the journal work without iCloud. We cannot access the user's private backups.
+
+The app collects no data and sends no analytics, tracking identifiers, or diagnostic uploads. Settings can open GitHub Issues in the system browser without attaching app content or logs. The user decides whether to post on that separate service.
+
+Network-backed journal storage uses Apple's iCloud facilities. CryptoKit SHA-256 checks backup file integrity; the app implements no custom encryption. Privacy policy: https://selfiejourney.com/privacy/.
 
 ## App Store Connect fields
 
@@ -101,9 +113,9 @@ The external group already has a public link. After approval, verify its enrollm
 
 ## Repeating the archive and upload
 
-Run from the repository root with the intended Apple Developer account signed into Xcode. For a later upload, first set a new build number and use a new archive path; builds `1` and `2` have already been uploaded. Keep the existing bundle and iCloud identifiers.
+Run from the repository root with the intended Apple Developer account signed into Xcode. For a later upload, first set a new build number and use a new archive path; builds `1`, `2`, and `3` have already been uploaded. Keep the existing bundle and iCloud identifiers.
 
-The successful **historical build-1** archive command is reproduced below. Build 2 already exists at `SelfieJourney-1.0-2.xcarchive`; keep both archives and use a new path/number for any later binary:
+The successful **historical build-1** archive command is reproduced below. Builds 2 and 3 already exist at their numbered archive paths; preserve them and use a new path/number for any later binary:
 
 ```sh
 xcodebuild \

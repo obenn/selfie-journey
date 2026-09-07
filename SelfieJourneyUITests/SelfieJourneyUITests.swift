@@ -148,19 +148,19 @@ final class SelfieJourneyUITests: XCTestCase {
     func testEmptyJournalAndLookbackLeadToTheFirstPortrait() {
         let app = launchEmptyJournal()
         app.tabBars.buttons["Journal"].tap()
-        XCTAssertTrue(app.staticTexts["A collection of you."].waitForExistence(timeout: 5))
-        let firstPortrait = app.buttons["Take your first portrait"]
+        XCTAssertTrue(app.staticTexts["Your selfies, day by day."].waitForExistence(timeout: 5))
+        let firstPortrait = app.buttons["Take your first selfie"]
         reveal(firstPortrait, in: app)
         firstPortrait.tap()
         XCTAssertTrue(app.buttons["capture.close"].waitForExistence(timeout: 5))
         dismissCameraPermissionIfPresent()
         app.buttons["capture.close"].tap()
-        XCTAssertTrue(app.staticTexts["A collection of you."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Your selfies, day by day."].waitForExistence(timeout: 5))
 
         app.tabBars.buttons["Lookback"].tap()
-        let emptyFilm = app.staticTexts["Your future favorite film."]
+        let emptyFilm = app.staticTexts["See yourself change."]
         XCTAssertTrue(emptyFilm.waitForExistence(timeout: 5))
-        let begin = app.buttons["Begin with a portrait"]
+        let begin = app.buttons["Take your first selfie"]
         reveal(begin, in: app)
         begin.tap()
         XCTAssertTrue(app.buttons["capture.close"].waitForExistence(timeout: 5))

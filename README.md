@@ -1,8 +1,8 @@
 # Selfie Journey
 
-**A moment today. A lifetime of you.**
+**One selfie a day. Watch yourself change.**
 
-A native iPhone and iPad journal for one portrait a day. Find a familiar frame, keep a small daily streak, and watch the ordinary moments become a film of your life.
+Take a selfie every day, use face guides to keep your face in a similar position, and turn your saved photos into a time-lapse video. Over months and years, see how you change with age. Selfie Journey is a native iPhone and iPad app that makes this daily habit easy to keep.
 
 Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications, iCloud Drive, and CryptoKit. The iOS app has no third-party packages or separate account. The app collects no data: there is no analytics, device identifier, feedback upload, or diagnostic transport. Optional support links open GitHub in the system browser. Selfie Journey is completely free, with no subscriptions or in-app purchases.
 
@@ -10,10 +10,10 @@ Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications
 
 - **A personal start:** first-open setup chooses one of four portrait distances and a daily reminder time. Notification permission is requested from the Enable button; skipping is always available. Change both later in Your daily ritual.
 - **A reason to return:** a prominent streak card, weekly completion marks, progress toward milestones, and a small save celebration. Missing a day never removes the portraits already collected.
-- **A familiar frame:** a mirrored front camera with pose-specific guides and an optional three-second timer. An adjustable ghost overlay uses a previous portrait with the same pose.
+- **Consistent face framing:** use the mirrored front camera, face and eye-line guides, and optional three-second timer. A subtle overlay of a previous photo helps you line up the next selfie before taking it.
 - **Live guidance:** Apple's on-device Vision landmarks help with distance, centering, eye height, and head angle. Brightness checks suggest more frontal light or less backlighting. Hints are advisory; capture stays under the user's control.
 - **A portrait journal:** review, retake, notes, month groups, sharing, and confirmed deletion. A same-day retake updates that day instead of adding extra streak credit.
-- **A living lookback:** chronological playback, scrubbing, three speeds, optional dates, and on-device MP4 export through the native share sheet.
+- **A time-lapse of your real photos:** Lookback plays your daily selfies in date order, showing how your face changes over time. Choose among three speeds, show or hide dates, and create an MP4 video on device to save or share.
 - **iCloud backups:** dated portrait-and-note snapshots, automatic and manual backup, upload status, and restore of missing days while preserving the journal already on the device.
 - **No data collected:** face guidance, journaling, and film creation run on device. Private iCloud backups belong to the user. Upgrading clears the obsolete reporting identifiers and local diagnostic defaults.
 - **A place for ideas:** settings opens [GitHub Issues](https://github.com/obenn/selfie-journey/issues) in the browser without attaching logs, identifiers, or app content. Users choose what to post; issues may be public.

@@ -32,15 +32,15 @@ struct LookbackView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 26) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("THE LOOKBACK")
+                    Text("YOUR DAILY SELFIES, IN MOTION")
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .tracking(2.4)
                         .foregroundStyle(JourneyTheme.secondary)
-                    Text("You, over time.")
+                    Text("Your time-lapse.")
                         .font(JourneyTheme.serif(43))
                         .foregroundStyle(JourneyTheme.ink)
                         .minimumScaleFactor(0.8)
-                    Text("Little by little, a life comes into view.")
+                    Text("Turn your daily selfies into a video and watch your face change over months and years.")
                         .font(.system(size: 15))
                         .foregroundStyle(JourneyTheme.secondary)
                 }
@@ -167,14 +167,14 @@ struct LookbackView: View {
                         .background(JourneyTheme.surface, in: Circle())
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel(isPlaying ? "Pause lookback" : "Play lookback")
+                .accessibilityLabel(isPlaying ? "Pause time-lapse" : "Play time-lapse")
                 Slider(value: Binding(
                     get: { Double(selectedIndex) },
                     set: { selectedIndex = Int($0) }
                 ), in: 0...Double(max(portraits.count - 1, 1)), step: 1) { editing in
                     if editing { isPlaying = false }
                 }
-                .accessibilityLabel("Lookback frame")
+                .accessibilityLabel("Time-lapse frame")
                 .accessibilityValue("\(selectedIndex + 1) of \(portraits.count)")
             }
             HStack {
@@ -199,10 +199,10 @@ struct LookbackView: View {
             }
             .foregroundStyle(JourneyTheme.secondary)
             VStack(alignment: .leading, spacing: 10) {
-                Text("The pace of your story")
+                Text("Time-lapse playback speed")
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(JourneyTheme.ink)
-                Picker("Film pace", selection: $pace) {
+                Picker("Video pace", selection: $pace) {
                     ForEach(VideoExporter.Pace.allCases) { pace in
                         Text(pace.rawValue).tag(pace)
                     }
@@ -224,14 +224,14 @@ struct LookbackView: View {
         if isExporting {
             VStack(spacing: 13) {
                 HStack {
-                    Text(exportProgress >= 1 ? "Finishing your film…" : "Gathering your days…")
+                    Text(exportProgress >= 1 ? "Finishing your video…" : "Creating your time-lapse…")
                         .font(.system(size: 14, weight: .medium))
                     Spacer()
                     Text(exportProgress, format: .percent.precision(.fractionLength(0)))
                         .font(.system(size: 12, design: .monospaced))
                 }
                 ProgressView(value: exportProgress)
-                    .accessibilityLabel("Creating film")
+                    .accessibilityLabel("Creating time-lapse video")
                 Button("Cancel") { exportTask?.cancel() }
                     .font(.system(size: 13, weight: .medium))
                     .padding(.top, 4)
@@ -241,8 +241,8 @@ struct LookbackView: View {
             .background(JourneyTheme.softAccent, in: RoundedRectangle(cornerRadius: 22))
         } else if let exportedURL {
             VStack(spacing: 11) {
-                ShareLink(item: exportedURL, preview: SharePreview("My Selfie Journey lookback")) {
-                    Label("Share your film", systemImage: "square.and.arrow.up")
+                ShareLink(item: exportedURL, preview: SharePreview("My Selfie Journey time-lapse")) {
+                    Label("Share your video", systemImage: "square.and.arrow.up")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -250,7 +250,7 @@ struct LookbackView: View {
                         .background(JourneyTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
-                Text("Your film is ready. Save it to Files or share it with someone.")
+                Text("Your time-lapse video is ready. Save it to Files or share it.")
                     .font(.system(size: 12))
                     .multilineTextAlignment(.center)
                     .foregroundStyle(JourneyTheme.secondary)
@@ -258,7 +258,7 @@ struct LookbackView: View {
         } else {
             VStack(spacing: 11) {
                 Button(action: createFilm) {
-                    Label("Create your film", systemImage: "film")
+                    Label("Create time-lapse video", systemImage: "film")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -275,10 +275,10 @@ struct LookbackView: View {
 
     private var firstFrameMessage: some View {
         VStack(spacing: 12) {
-            Text("The beginning of something.")
+            Text("Your first frame is saved.")
                 .font(JourneyTheme.serif(26))
                 .foregroundStyle(JourneyTheme.ink)
-            Text("Your first frame is here. Come back tomorrow;\na lookback begins with two portraits.")
+            Text("Take another selfie tomorrow to start your time-lapse. Keep adding daily photos to see changes over time.")
                 .font(.system(size: 14))
                 .lineSpacing(4)
                 .foregroundStyle(JourneyTheme.secondary)
@@ -295,7 +295,7 @@ struct LookbackView: View {
                     .fill(JourneyTheme.sage)
                 VStack(spacing: 30) {
                     HStack {
-                        Text("PICA / DAY")
+                        Text("SELFIE JOURNEY")
                         Spacer()
                         Image(systemName: "sparkle")
                     }
@@ -314,7 +314,7 @@ struct LookbackView: View {
                             .foregroundStyle(JourneyTheme.ink.opacity(0.7))
                     }
                     .frame(height: 162)
-                    Text("A little every day.\nA lifetime to look back on.")
+                    Text("One selfie a day.\nA time-lapse of you.")
                         .font(JourneyTheme.serif(25))
                         .lineSpacing(3)
                         .multilineTextAlignment(.center)
@@ -326,17 +326,17 @@ struct LookbackView: View {
             .accessibilityElement(children: .combine)
 
             VStack(spacing: 12) {
-                Text("Your future favorite film.")
+                Text("See yourself change.")
                     .font(JourneyTheme.serif(27))
                     .foregroundStyle(JourneyTheme.ink)
-                Text("A portrait each day becomes a moving memory.\nStart today. Watch your story grow.")
+                Text("Take your first selfie today. Add one each day to see your face change over months and years.")
                     .font(.system(size: 14))
                     .lineSpacing(4)
                     .foregroundStyle(JourneyTheme.secondary)
             }
             .multilineTextAlignment(.center)
             Button(action: onCapture) {
-                Label("Begin with a portrait", systemImage: "camera")
+                Label("Take your first selfie", systemImage: "camera")
                     .font(.system(size: 15, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)

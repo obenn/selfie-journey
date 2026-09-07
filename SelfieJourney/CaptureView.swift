@@ -97,10 +97,10 @@ struct CaptureView: View {
             .accessibilityIdentifier("capture.close")
             Spacer()
             VStack(spacing: 5) {
-                Text(isReviewing ? "ONE FOR THE MEMORY" : "TODAY’S PORTRAIT")
+                Text(isReviewing ? "TODAY’S SELFIE" : "YOUR DAILY SELFIE")
                     .font(.system(size: 9, weight: .semibold)).tracking(2.4)
                     .foregroundStyle(cream.opacity(0.55))
-                Text(isReviewing ? "This is you, today." : "Just as you are.")
+                Text(isReviewing ? "This is you, today." : "Line up your face.")
                     .font(.system(size: 23, weight: .regular, design: .serif))
             }
             Spacer()
@@ -245,7 +245,7 @@ struct CaptureView: View {
             }
             .padding(.horizontal, 20)
 
-            Text("A small ritual. A life in motion.")
+            Text("Match your framing each day for a steadier time-lapse.")
                 .font(.system(size: 12, weight: .regular, design: .serif))
                 .foregroundStyle(cream.opacity(0.45))
         }
@@ -395,7 +395,7 @@ struct CaptureView: View {
                     HStack(spacing: 10) {
                         if isSaving { ProgressView().tint(cream) }
                         else { Image(systemName: "checkmark") }
-                        Text(isSaving ? "Saving your moment…" : "Save today’s portrait")
+                        Text(isSaving ? "Saving your selfie…" : "Save today’s portrait")
                     }
                     .font(.system(size: 14, weight: .semibold))
                     .frame(maxWidth: .infinity)
@@ -406,7 +406,7 @@ struct CaptureView: View {
             }
             .buttonStyle(.plain)
             .disabled(isSaving)
-            Text("The beautiful part is showing up.")
+            Text("One more daily photo for your time-lapse.")
                 .font(.system(size: 12, weight: .regular, design: .serif))
                 .foregroundStyle(cream.opacity(0.5))
         }
@@ -420,7 +420,7 @@ struct CaptureView: View {
                 .font(.system(size: 30, weight: .regular, design: .serif))
             tip("viewfinder", "Your \(pose.title.lowercased()) frame", "Keep your face inside the oval and your eyes along the line. Change your usual distance any time in Your ritual.")
             tip("face.smiling", "A little help finding your frame", "Live face detection suggests distance, position, and head angle. The guide turns green when things line up; you can take your portrait at any time.")
-            tip("square.on.square", "Meet your past self", "Turn on Last portrait to line up with your previous photo. Adjust its opacity until it feels right.")
+            tip("square.on.square", "Match your previous selfie", "Turn on Last portrait to line up with your previous photo. Adjust its opacity until it feels right.")
             tip("sun.max", "Let the light find you", "Dim-image and backlighting hints can help. Face a window for soft, even light. Brightness hints are approximate, so trust your eyes too.")
             Text("Live guidance uses Apple Vision on your device. Preview frames and facial measurements are never saved or uploaded. If live guidance is unavailable, the visual guides still work.")
                 .font(.footnote).foregroundStyle(cream.opacity(0.55)).lineSpacing(3)

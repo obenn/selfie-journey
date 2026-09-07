@@ -23,11 +23,11 @@ struct TodayView: View {
                 rhythm(now: now, streak: streak, capturedToday: today != nil)
 
                 VStack(spacing: 11) {
-                    PrimaryButton(title: today != nil ? "Retake today's portrait" : "Take today's portrait", action: onCapture)
+                    PrimaryButton(title: today != nil ? "Retake today's selfie" : "Take today's selfie", action: onCapture)
                         .accessibilityIdentifier("today.capture")
                     HStack(spacing: 5) {
                         Image(systemName: today != nil ? "checkmark.circle.fill" : "sparkle")
-                        Text(today != nil ? "Today's portrait is saved. Your streak is up to date." : "A few seconds today. A gift to your future self.")
+                        Text(today != nil ? "Today's selfie is saved. Another frame for your time-lapse." : "Same framing each day. Watch yourself change over time.")
                     }
                     .font(.caption2).foregroundStyle(JourneyTheme.secondary)
                     .multilineTextAlignment(.center)
@@ -41,8 +41,8 @@ struct TodayView: View {
                             .font(.system(size: 20)).foregroundStyle(JourneyTheme.accent)
                             .frame(width: 43, height: 43).background(JourneyTheme.softAccent, in: RoundedRectangle(cornerRadius: 14))
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Make a little time for you").font(.subheadline.weight(.medium))
-                            Text(reminders.enabled ? "Your daily reminder · \(reminders.date.formatted(date: .omitted, time: .shortened))" : "Give your portrait a place in your day")
+                            Text("Your daily selfie reminder").font(.subheadline.weight(.medium))
+                            Text(reminders.enabled ? "Your daily reminder · \(reminders.date.formatted(date: .omitted, time: .shortened))" : "Choose a time to add your next frame")
                                 .font(.caption).foregroundStyle(JourneyTheme.secondary)
                         }
                         Spacer(minLength: 0)
@@ -54,9 +54,9 @@ struct TodayView: View {
                 Button(action: onLookback) {
                     HStack(alignment: .center, spacing: 20) {
                         VStack(alignment: .leading, spacing: 9) {
-                            Eyebrow(text: "THE BIGGER PICTURE")
-                            Text("A lifetime,\none day at a time.").font(JourneyTheme.serif(27)).tracking(-0.5)
-                            Text(portraits.count >= 2 ? "Watch your story come together" : "Every portrait becomes part of your film")
+                            Eyebrow(text: "YOUR SELFIE TIME-LAPSE")
+                            Text("Watch yourself\nchange over time.").font(JourneyTheme.serif(27)).tracking(-0.5)
+                            Text(portraits.count >= 2 ? "Play your selfies as a time-lapse video" : "Each daily selfie becomes a frame in your video")
                                 .font(.caption).foregroundStyle(JourneyTheme.secondary)
                         }
                         Spacer(minLength: 0)
@@ -70,7 +70,7 @@ struct TodayView: View {
                 .buttonStyle(.plain).accessibilityIdentifier("today.lookback")
                 HStack(spacing: 5) {
                     Image(systemName: "heart")
-                    Text("Your portraits. Your story.")
+                    Text("Your real photos. Your changes over time.")
                 }
                 .font(.system(size: 10)).foregroundStyle(JourneyTheme.secondary)
                 .frame(maxWidth: .infinity).padding(.bottom, 15)
