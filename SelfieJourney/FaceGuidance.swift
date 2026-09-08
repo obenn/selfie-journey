@@ -25,7 +25,7 @@ nonisolated enum FaceGuidanceCue: Equatable, Sendable {
     var message: String {
         switch self {
         case .starting: "Finding your frame…"
-        case .manual: "Follow the oval and eye line"
+        case .manual: "Center your face; eyes near the dotted line"
         case .noFace: "Bring your face into the frame"
         case .multipleFaces: "Make this a moment just for you"
         case .lowLight: "Try a little more light in front of you"

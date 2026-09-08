@@ -23,6 +23,39 @@ struct FaceGuidanceTests {
         #expect(report.light == .good)
     }
 
+    @Test(arguments: PortraitPose.allCases)
+    func framingBracketsLeaveRoomAroundTheFaceAndEyeLine(pose: PortraitPose) {
+        let guide = pose.framingBounds
+        let target = CGRect(x: 0.5 - pose.faceWidth / 2, y: pose.centerY - pose.faceHeight / 2,
+                            width: pose.faceWidth, height: pose.faceHeight)
+        #expect(guide.minX >= 0 && guide.maxX <= 1)
+        #expect(guide.minY >= 0 && guide.maxY <= 1)
+        #expect(guide.contains(target))
+        #expect(guide.width > target.width * 1.25)
+        #expect(guide.height > target.height * 1.15)
+        #expect(abs(guide.midX - 0.5) < 0.00001)
+        #expect(pose.eyeLineY > guide.minY && pose.eyeLineY < guide.maxY)
+    }
+
+    @Test(arguments: PortraitPose.allCases)
+    func differentFaceWidthsDoNotRequireMatchingAnOutline(pose: PortraitPose) {
+        for width in [pose.faceWidth * 0.75, pose.faceWidth * 1.25] {
+            var geometry = face(pose, eyes: CGPoint(x: 0.5, y: pose.eyeLineY))
+            geometry.bounds = CGRect(x: 0.5 - width / 2, y: geometry.bounds.minY,
+                                     width: width, height: geometry.bounds.height)
+            #expect(FaceGuidancePolicy.evaluate(faces: [geometry], light: goodLight, pose: pose).isAligned)
+        }
+    }
+
+    @Test(arguments: PortraitPose.allCases)
+    func naturalFramingVariationIsAcceptedWithoutChasingAnExactFit(pose: PortraitPose) {
+        for factor in [0.88, 1.12] {
+            let geometry = face(pose, x: 0.54, height: pose.faceHeight * factor,
+                                eyes: CGPoint(x: 0.54, y: pose.eyeLineY + 0.04))
+            #expect(FaceGuidancePolicy.evaluate(faces: [geometry], light: goodLight, pose: pose).isAligned)
+        }
+    }
+
     @Test func noFaceAndMultipleFacesHaveUsefulDistinctAdvice() {
         #expect(FaceGuidancePolicy.evaluate(faces: [], light: goodLight, pose: .classic).cue == .noFace)
         let faces = [face(x: 0.4), face(x: 0.7)]

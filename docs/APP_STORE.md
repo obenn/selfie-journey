@@ -1,11 +1,16 @@
 # Selfie Journey — App Store metadata
 
-Updated September 6, 2026 from the shipped 1.0 source, privacy manifest, service implementation, and the current App Store Connect session. The status below separates verified saved fields from entries still awaiting verification or upload. The app has not been submitted for public App Store release review. Build 2 remains Waiting for Review in the latest observed TestFlight state. Build 3 uploaded, processed, and is Ready to Submit with the internal group’s two testers assigned. Its external submission is blocked while build 2 remains in review.
+Updated September 7, 2026. **Public metadata and screenshots remain on build 3 while build 4 is prepared for internal testing.** Build 4's generic framing guide and optional on-device background removal have not been added to the public listing or website. Its signed archive is verified; one CLI upload attempt failed before delivery on Xcode account authentication, and Organizer recovery is blocked while the Mac is locked. Later external promotion requires the user's choice.
+
+The Connect results below were last verified on September 6. At that time build 2 was Waiting for Review externally, build 3 was Ready to Submit and assigned to two internal testers, and App Store Distribution selected build 3. The App Store release had not been submitted for review. Recheck the current review state before taking a later release action; these are historical observations.
 
 ## Current completion status
 
-| Area | Verified status |
+| Area | Last verified status, September 6 unless noted |
 | --- | --- |
+| Build 4 preparation | `build/releases/SelfieJourney-1.0-4.xcarchive` succeeded; bundled **1.0 (4)** and code signature verified. One CLI export/upload attempt failed before delivery with **Failed to Use Accounts** because a stale saved account lacked `Xcode-Token`. Locked Mac prevents Organizer recovery; no verified delivery or external promotion |
+| Build-4 validation, September 7 | **61 Swift Testing tests in 9 suites passed**. **All 7 iPhone UI cases passed across the initial run and targeted retry**, including export invalidation; the import test passed after its photo-picker dismissal wait was corrected. Video-background options and four pose cards visually checked. Both relevant iPad cases passed: onboarding/pose persistence and video export/invalidation, with the latter using a corrected native-tab selector and a clean simulator session. Their screenshots passed visual inspection |
+| Build-4 background-removal evidence | Simulator real-Vision smoke skipped because its model is unavailable. The production renderer passed actual Vision on one macOS fixture in **3.76 seconds**, with a visually checked PNG. No physical-iPhone or broad portrait-quality pass claimed |
 | App information | Subtitle “Daily selfies to time-lapse”, primary Photo & Video, secondary Lifestyle, and calculated **4+** age rating saved |
 | Privacy URLs | Policy and Choices both saved as https://selfiejourney.com/privacy/ |
 | Privacy draft | **Data Not Collected** saved and preview verified for the replacement build 2; not yet published |
@@ -13,7 +18,7 @@ Updated September 6, 2026 from the shipped 1.0 source, privacy manifest, service
 | Native clarity revision | **1.0 (3)** uploaded and processed; Connect lists September 6 at **8:14 PM America/Toronto**. Status **Ready to Submit**, assigned to the internal group’s 2 testers |
 | Beta review fields | Actual contact complete and saved privately; Sign-in Required = No. New 1,044-character beta description saved. Build-3 What to Test (1,434 characters) saved and confirmed; build-3 review notes remain prepared, not saved. Earlier build-2 review notes remain |
 | App Store review fields | Distribution-form contact/notes were previously incomplete; recheck separately before a public App Store submission. Use the contact already provided rather than asking for it again |
-| Builds | Build 3 processed and assigned internally. Build 2 remains **Waiting for Review** externally; Connect permits only one build of version 1.0 in beta review at a time. **App Store Distribution selects build 3**, saved and verified |
+| Builds | Build 3 was processed and assigned internally. Build 2 was **Waiting for Review** externally; Connect permits only one build per version in beta review at a time. **App Store Distribution selected build 3**, saved and verified |
 | App icon | Connect's icon preview verified against the bundled icon |
 | Native verification | Build 3: 4 functional iPhone UI tests, 1 light iPhone capture test, and 1 iPad UI test passed. Earlier build-2 baseline: 49 unit tests and 7 UI tests passed |
 | Website/service | Clarity copy live: deployment `a220c401-cf84-464e-ba93-170405040f3f`, Worker version `98be3939-40f6-4d3b-ac65-8adfc77891df`, September 7 at 00:12:34 UTC. See [deployment evidence](DEPLOYMENT.md) |
@@ -27,11 +32,11 @@ Public App Store release work still remaining:
 1. Complete/recheck the separate App Store review contact and notes, using the contact already supplied; set Sign-in Required to No.
 2. Verify and publish the Data Not Collected label before submitting the public App Store release.
 
-**Build 2 remains Waiting for Review externally. Build 3 is processed and assigned to the two internal testers.** Connect blocks another version-1.0 beta submission until the current review is approved; build 3 has not been submitted externally. The steps above concern the public App Store listing and do not block the beta submission. The privacy label remains unpublished. For internal invitations and external approval, see [TestFlight status](TESTFLIGHT.md).
+The steps above concern the public App Store listing and do not block internal TestFlight testing. The privacy label was last verified as unpublished. Build 4 is intended for the existing Internal group first; keep public copy and screenshots unchanged until the user chooses promotion. For the build-4 testing notes and the later same-build promotion procedure, see [TestFlight status](TESTFLIGHT.md).
 
 ## Store copy — saved clarity update
 
-The subtitle, promotional text, description, and keywords below were **saved and revisited in App Store Connect**. Build 3 includes the matching native wording and has uploaded successfully. It has processed and is assigned internally. It has not replaced build 2 in external review.
+The subtitle, promotional text, description, and keywords below were **saved and revisited in App Store Connect on September 6**. They match build 3 and are intentionally preserved during build-4 internal testing. Build-4 feature copy is not saved or proposed for publication here.
 
 **Name:** Selfie Journey
 
@@ -85,7 +90,7 @@ portrait,daily,diary,timelapse,streak,memories,camera,face,aging,video,photo,pro
 | Privacy choices URL | https://selfiejourney.com/privacy/ — saved |
 | App Store Connect app ID | 6809197003 |
 | Bundle ID | com.strikethrough.PicaDay — preserve |
-| Version/build | Build 3 processed and assigned internally; external submission awaits the current version-1.0 review. App Store Distribution selects build 3; saved and verified |
+| Version/build | At the September 6 check, build 3 was processed and assigned internally, and App Store Distribution selected build 3. Keep that public draft during build-4 internal testing |
 | Price | Free; user explicitly requested this |
 | In-app purchases/subscriptions | None implemented |
 | Sign-in required | No in saved TestFlight review information; verify the separate App Store review form before public release |
@@ -98,15 +103,17 @@ portrait,daily,diary,timelapse,streak,memories,camera,face,aging,video,photo,pro
 
 Do not invent copyright ownership wording, business/trader status, legal contact details, territorial regulatory registrations, release timing, or accessibility conformance. Preserve existing answers when they are account decisions rather than properties inferable from the source. A personal photo journal is not a medical or health-monitoring product.
 
-## App privacy answers — build 2
+## App privacy answers — build 2 onward
 
-**Data Not Collected** is saved in App Store Connect as a draft, with the preview verified. It describes **1.0 (2)**, now uploaded and in TestFlight review, rather than the expired build 1. The store privacy label has not been published.
+**Data Not Collected** was saved in App Store Connect as a draft, with the preview verified. It describes the no-collection implementation introduced in **1.0 (2)** and retained in subsequent source, rather than expired build 1. The store privacy label has not been verified as published.
 
 The replacement app has no analytics client, installation identifier, local diagnostic ring, feedback form, or collection transport. `NSPrivacyTracking` is false and `NSPrivacyCollectedDataTypes` is empty. App-only UserDefaults remain declared with reason `CA92.1`. User photos and notes remain local; optional backups use the user's private iCloud Drive. On-device camera analysis is not developer collection.
 
+Build 4's optional background removal also runs entirely on device, using Apple Vision person masks and Core Image to process export copies. Original photos and private iCloud backups remain unchanged. No photos, masks, or processing results are sent to the developer. Validate the signed build's manifest and network behavior as part of release checks; the feature does not introduce a new collection purpose.
+
 GitHub support is an ordinary external browser link with no attached identifiers, device details, logs, or app content. Voluntary issues are governed by GitHub's privacy policy and can be public. The website's ordinary Cloudflare requests and retained historical build-1 records are explained separately in the privacy policy. See Apple's [App privacy details guidance](https://developer.apple.com/app-store/app-privacy-details/) for the collection boundary and Apple-service distinction.
 
-Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints now reject old-client submissions with verified 410 responses. Build 2 is now in TestFlight review; the separate Distribution draft now selects build 3, saved and verified. App Store review information and privacy-label publication remain unfinished.
+Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints reject old-client submissions with verified 410 responses. At the September 6 check, build 2 was in TestFlight review and the separate Distribution draft selected build 3. App Store review information and privacy-label publication remain unfinished.
 
 ## Review notes — proposed for build 3
 

@@ -158,7 +158,7 @@ struct PortraitGuideView: View {
                     Text("Keep your face in a similar position each day. Consistent framing makes it easier to see how you change when you play your selfies as a time-lapse.")
                         .foregroundStyle(JourneyTheme.secondary)
                     tip("01", "Find your light", "Face a window, with the light in front of you. A simple background keeps the focus on your face.", "sun.max")
-                    tip("02", "Meet the guide", "Pick your favorite framing distance in Your daily ritual. Hold your phone at eye level, center your face in the oval, and rest your eyes along the dotted line. Live hints help with distance, position, head angle, and light.", "viewfinder")
+                    tip("02", "Meet the guide", "Pick your favorite framing distance in Your daily ritual. Hold your phone at eye level, center your face between the open brackets, and rest your eyes along the dotted line. Live hints help with distance, position, head angle, and light.", "viewfinder")
                     tip("03", "Echo yesterday", "After your first portrait, turn on the ghost overlay. Match your eyes and shoulders to your previous photo.", "square.on.square")
                     tip("04", "Take a breath", "Use the three-second timer, relax your shoulders, and look into the lens. There's no need to smile unless you feel like it.", "timer")
                     Text("Keep your framing familiar. Let your photos show how you change with age.")

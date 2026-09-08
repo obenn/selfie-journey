@@ -130,9 +130,8 @@ struct CaptureView: View {
                             .allowsHitTesting(false)
                             .accessibilityHidden(true)
                     }
-                    PortraitAlignmentGuide(color: camera.guidance.isAligned ? alignedColor : cream, pose: pose, aligned: camera.guidance.isAligned)
-                        .allowsHitTesting(false)
-                        .accessibilityHidden(true)
+                    PortraitFramingGuide(pose: pose, color: camera.guidance.isAligned ? alignedColor : cream,
+                                         aligned: camera.guidance.isAligned)
                     VStack {
                         HStack(spacing: 6) {
                             Image(systemName: "viewfinder")
@@ -245,9 +244,10 @@ struct CaptureView: View {
             }
             .padding(.horizontal, 20)
 
-            Text("Match your framing each day for a steadier time-lapse.")
+            Text("Eyes near the line. Face centered between the brackets.")
                 .font(.system(size: 12, weight: .regular, design: .serif))
                 .foregroundStyle(cream.opacity(0.45))
+                .multilineTextAlignment(.center)
         }
     }
 
@@ -316,7 +316,7 @@ struct CaptureView: View {
     private func unavailableCamera(title: String, message: String, settings: Bool) -> some View {
         ZStack {
             LinearGradient(colors: [Color(red: 0.16, green: 0.19, blue: 0.17), ink], startPoint: .topLeading, endPoint: .bottomTrailing)
-            PortraitAlignmentGuide(color: cream.opacity(0.18), pose: pose).accessibilityHidden(true)
+            PortraitFramingGuide(pose: pose, color: cream.opacity(0.18))
             VStack(spacing: 16) {
                 Image(systemName: settings ? "camera.fill" : "person.crop.rectangle")
                     .font(.system(size: 34, weight: .ultraLight))
@@ -418,8 +418,8 @@ struct CaptureView: View {
             Capsule().fill(cream.opacity(0.25)).frame(width: 32, height: 4).frame(maxWidth: .infinity)
             Text("Find your familiar frame.")
                 .font(.system(size: 30, weight: .regular, design: .serif))
-            tip("viewfinder", "Your \(pose.title.lowercased()) frame", "Keep your face inside the oval and your eyes along the line. Change your usual distance any time in Your ritual.")
-            tip("face.smiling", "A little help finding your frame", "Live face detection suggests distance, position, and head angle. The guide turns green when things line up; you can take your portrait at any time.")
+            tip("viewfinder", "Your \(pose.title.lowercased()) frame", "Center your face between the open brackets and bring your eyes near the dotted line. The brackets leave room for different face shapes. Change your usual distance any time in Your ritual.")
+            tip("face.smiling", "A little help finding your frame", "The frame stays in place so you can use the same reference each day. Live hints suggest distance, position, and head angle. A green guide and checkmark mean you're lined up; you can take your portrait at any time.")
             tip("square.on.square", "Match your previous selfie", "Turn on Last portrait to line up with your previous photo. Adjust its opacity until it feels right.")
             tip("sun.max", "Let the light find you", "Dim-image and backlighting hints can help. Face a window for soft, even light. Brightness hints are approximate, so trust your eyes too.")
             Text("Live guidance uses Apple Vision on your device. Preview frames and facial measurements are never saved or uploaded. If live guidance is unavailable, the visual guides still work.")
@@ -513,47 +513,6 @@ struct CaptureView: View {
 }
 
 private enum PortraitImportError: Error { case unreadable }
-
-private struct PortraitAlignmentGuide: View {
-    let color: Color
-    let pose: PortraitPose
-    var aligned = false
-
-    var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-            let eyeY = height * pose.eyeLineY
-            let faceTop = height * (pose.centerY - pose.faceHeight * 0.62)
-            let faceBottom = height * (pose.centerY + pose.faceHeight * 0.5)
-            let shoulderY = min(height * 0.88, faceBottom + height * 0.09)
-            ZStack {
-                Ellipse()
-                    .stroke(color.opacity(aligned ? 0.85 : 0.55), style: StrokeStyle(lineWidth: aligned ? 1.6 : 1, dash: aligned ? [] : [7, 6]))
-                    .frame(width: width * pose.faceWidth, height: height * pose.faceHeight * 1.12)
-                    .position(x: width / 2, y: height * (pose.centerY - pose.faceHeight * 0.06))
-                Path { path in
-                    path.move(to: CGPoint(x: width * (0.5 - pose.faceWidth * 0.62), y: eyeY))
-                    path.addLine(to: CGPoint(x: width * (0.5 + pose.faceWidth * 0.62), y: eyeY))
-                    path.move(to: CGPoint(x: width * 0.5, y: faceTop))
-                    path.addLine(to: CGPoint(x: width * 0.5, y: faceBottom))
-                }
-                .stroke(color.opacity(0.35), style: StrokeStyle(lineWidth: 0.7, dash: [3, 6]))
-                Path { path in
-                    for x in [width * (0.5 - pose.faceWidth * 0.22), width * (0.5 + pose.faceWidth * 0.22)] {
-                        path.move(to: CGPoint(x: x - 7, y: eyeY))
-                        path.addLine(to: CGPoint(x: x + 7, y: eyeY))
-                    }
-                    path.move(to: CGPoint(x: width * 0.14, y: shoulderY + height * 0.05))
-                    path.addQuadCurve(to: CGPoint(x: width * 0.34, y: shoulderY), control: CGPoint(x: width * 0.22, y: shoulderY))
-                    path.move(to: CGPoint(x: width * 0.66, y: shoulderY))
-                    path.addQuadCurve(to: CGPoint(x: width * 0.86, y: shoulderY + height * 0.05), control: CGPoint(x: width * 0.78, y: shoulderY))
-                }
-                .stroke(color.opacity(0.65), style: StrokeStyle(lineWidth: 1.2, lineCap: .round))
-            }
-        }
-    }
-}
 
 private struct CameraPreview: UIViewRepresentable {
     let camera: CameraService

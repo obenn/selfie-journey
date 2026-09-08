@@ -324,50 +324,24 @@ struct PoseSelectionView: View {
     }
 }
 
-/// A deliberately abstract portrait, so framing choices never suggest one
-/// person's face is the ideal. The same proportions power the camera guide.
+/// The same open framing guide as the camera, shown on a complete 3:4 canvas.
+/// Size suggests camera distance without asking anyone to match a silhouette.
 struct PoseIllustration: View {
     let pose: PortraitPose
     var selected = false
 
     var body: some View {
         GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
-            // A 3:4 reference keeps the distance preview truthful even inside
-            // the shorter setup cards; the frame is clipped as a photograph.
-            let portraitHeight = max(height, width * 4 / 3)
-            let headWidth = width * pose.faceWidth
-            let headHeight = portraitHeight * pose.faceHeight
-            let centerY = height * 0.43
+            let canvasHeight = min(geometry.size.height, geometry.size.width * 4 / 3)
+            let canvasWidth = canvasHeight * 3 / 4
             ZStack {
                 (selected ? JourneyTheme.softAccent : JourneyTheme.line.opacity(0.52))
-                Path { path in
-                    let neckY = centerY + headHeight * 0.31
-                    path.move(to: CGPoint(x: width * 0.5 - headWidth * 0.16, y: neckY))
-                    path.addLine(to: CGPoint(x: width * 0.5 - headWidth * 0.18, y: neckY + headHeight * 0.26))
-                    path.addCurve(to: CGPoint(x: width * 0.5 - headWidth * 1.03, y: neckY + headHeight * 0.70),
-                                  control1: CGPoint(x: width * 0.5 - headWidth * 0.96, y: neckY + headHeight * 0.30),
-                                  control2: CGPoint(x: width * 0.5 - headWidth * 1.03, y: neckY + headHeight * 0.40))
-                    path.addLine(to: CGPoint(x: width * 0.5 - headWidth * 1.16, y: height + portraitHeight))
-                    path.addLine(to: CGPoint(x: width * 0.5 + headWidth * 1.16, y: height + portraitHeight))
-                    path.addLine(to: CGPoint(x: width * 0.5 + headWidth * 1.03, y: neckY + headHeight * 0.70))
-                    path.addCurve(to: CGPoint(x: width * 0.5 + headWidth * 0.18, y: neckY + headHeight * 0.26),
-                                  control1: CGPoint(x: width * 0.5 + headWidth * 1.03, y: neckY + headHeight * 0.40),
-                                  control2: CGPoint(x: width * 0.5 + headWidth * 0.96, y: neckY + headHeight * 0.30))
-                    path.addLine(to: CGPoint(x: width * 0.5 + headWidth * 0.16, y: neckY))
-                    path.closeSubpath()
-                }.fill(JourneyTheme.accent.opacity(selected ? 0.45 : 0.25))
-                Ellipse()
-                    .fill(JourneyTheme.accent.opacity(selected ? 0.64 : 0.4))
-                    .frame(width: headWidth, height: headHeight)
-                    .position(x: width * 0.5, y: centerY)
-                Path { path in
-                    let eyeY = centerY - headHeight * 0.12
-                    path.move(to: CGPoint(x: width * 0.5 - headWidth * 0.25, y: eyeY))
-                    path.addLine(to: CGPoint(x: width * 0.5 + headWidth * 0.25, y: eyeY))
-                }
-                .stroke(JourneyTheme.surface.opacity(0.85), style: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(JourneyTheme.surface.opacity(selected ? 0.55 : 0.4))
+                    .overlay {
+                        PortraitFramingGuide(pose: pose, color: JourneyTheme.accent, aligned: selected)
+                    }
+                    .frame(width: canvasWidth, height: canvasHeight)
             }
             .clipShape(RoundedRectangle(cornerRadius: 17))
         }

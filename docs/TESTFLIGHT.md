@@ -1,41 +1,71 @@
 # Selfie Journey — TestFlight release
 
-Updated September 6, 2026. **Selfie Journey 1.0 (3) is uploaded, processed, and available to the internal group’s two existing testers.** Connect lists it as Ready to Submit. **Build 2 remains Waiting for Review externally**; Apple permits only one build of version 1.0 in beta review at a time, so build 3 has not been submitted externally. The existing public link still cannot accept testers until the group has an approved build. Build 1 is expired.
+Updated September 7, 2026. **Build 4 has a verified signed archive and is being prepared for internal testing first.** One CLI export/upload attempt failed before delivery because Xcode could not use saved account credentials. Organizer is unavailable while the Mac remains locked, so delivery and tester availability are still pending. It adds a generic framing guide and optional on-device background removal for time-lapse videos. The user will choose later whether to promote the same build externally; no external promotion or notification is scheduled.
+
+The App Store Connect results below were last verified on September 6: build 3 was processed and available to the Internal group's two testers, and build 2 was Waiting for Review externally. These are historical observations, not a fresh check of Apple's review status. Recheck Connect when it is accessible.
 
 ## Current release status
 
-| Item | Verified result |
+| Item | Result; Connect observations last verified September 6 |
 | --- | --- |
 | App Store Connect record | Selfie Journey, app ID `6809197003` |
 | Bundle ID | `com.strikethrough.PicaDay` |
-| Latest uploaded version/build | **1.0 (3)**; upload and processing complete; status **Ready to Submit** |
-| Latest signed archive | `build/releases/SelfieJourney-1.0-3.xcarchive` — signed successfully, retained locally, gitignored |
+| Build being prepared | **1.0 (4)** — internal-first; signed archive complete. One CLI export/upload attempt failed before delivery with **Failed to Use Accounts** because a saved stale account lacked `Xcode-Token`. Mac remains locked, blocking Organizer recovery. Processing and group assignment unverified |
+| Build-4 signed archive | `build/releases/SelfieJourney-1.0-4.xcarchive` — archive succeeded, bundled version/build confirmed as **1.0 (4)**, code signature valid |
+| Build-4 unit tests | **61 Swift Testing tests in 9 suites passed** in `/tmp/selfiejourney-build4-iphone-final.xcresult` |
+| Build-4 Vision checks | Simulator smoke XCTest **skipped** because its model is unavailable. The same production renderer passed an actual-Vision macOS fixture check in **3.76 seconds**; `/tmp/selfiejourney-background-smoke/portrait-neutral.png` passed visual inspection. This is one macOS fixture, not physical-iPhone or broad-quality verification |
+| Build-4 UI checks | **All 7 iPhone UI cases passed across the initial run and targeted retry**, including new export invalidation. Six passed initially; the baseline photo-import dismissal test passed after correcting its hittability wait in `/tmp/selfiejourney-build4-iphone-import-retry.xcresult`. Video-background options and all four pose cards passed visual inspection. Both relevant iPad cases passed: onboarding/pose persistence and video export/invalidation. The latter passed after adapting its selector to native floating tabs and restarting a stalled test session; app code was unchanged. iPad pose and video-option screenshots also passed visual inspection |
+| Last verified uploaded version/build | **1.0 (3)**; upload and processing complete; status **Ready to Submit**, observed September 6 |
+| Previous signed archive | `build/releases/SelfieJourney-1.0-3.xcarchive` — retained locally, gitignored |
 | Upload evidence | Xcode Organizer confirmed upload complete; Connect’s completed Build Uploads row lists **September 6, 8:14 PM America/Toronto** |
 | Upload method | Existing signed archive opened in Xcode Organizer; **App Store Connect** distribution, eligible for external testing |
 | Earlier upload failure | CLI retry still failed on stale account credential keys even after unlock; the valid active Xcode account and Organizer upload resolved delivery without rebuilding |
 | Native validation | Build 3: 4 functional iPhone UI tests, 1 light iPhone capture test, and 1 iPad UI test passed. All six native screenshot assets refreshed. Build-2 baseline had 49 unit and 7 UI tests pass |
 | Beta information | New 1,044-character beta description and build-3 What to Test (1,434 characters) saved. Contact complete privately; Sign-in Required = No. Build-3 review notes remain prepared, not saved; build-2 review notes retained |
 | Build 3 distribution | Processed and automatically assigned internally. **Not submitted externally**: Connect blocks another build from version 1.0 until the current beta review is approved |
-| External group | Existing group: **1 tester, 1 build**, build **1.0 (2)**, **Waiting for Review**, 90-day testing window |
+| External group, last observed September 6 | Existing group: **1 tester, 1 build**, build **1.0 (2)**, **Waiting for Review**; recheck before any later promotion |
 | External notification | **Automatically notify testers** selected when submitting build 2 |
 | Public invitation link | Existing link: https://testflight.apple.com/join/ucGAbHsd. Connect warns that testers **cannot join until the group has an approved build** |
 | Internal group | **2 existing testers**, added manually by the user; build 3 assigned automatically and available for internal testing |
 | Previous build | **1.0 (1) Expired** |
-| Website | Clarity update live: deployment `a220c401-cf84-464e-ba93-170405040f3f`, Worker version `98be3939-40f6-4d3b-ac65-8adfc77891df`, September 7 at 00:12:34 UTC; free/no-subscription copy preserved |
+| Public website and metadata | Remain on the build-3 clarity update while build 4 is tested internally; no build-4 public screenshots, copy, or website deployment. Last site deployment: `a220c401-cf84-464e-ba93-170405040f3f`, September 7 at 00:12:34 UTC |
 | App Store-only work | Distribution now selects build 3, saved and verified; store privacy label remains a draft and review fields are incomplete. All six build-3 screenshots uploaded and verified: 3 iPhone 6.9-inch and 3 iPad 13-inch. These are separate from TestFlight |
 
 ## Remaining TestFlight actions
 
-1. Internal testers can use build 3 now. No additional internal invitation is pending.
-2. Await the current external review of build 2. Connect explicitly permits only one build of version 1.0 in beta review and says additional builds can be submitted once the submitted build is approved. Build 2’s review was preserved.
-3. After that gate clears, save the prepared build-3 review notes and submit build 3 externally. Its What to Test is already saved.
-4. Verify an approved build is installable through https://testflight.apple.com/join/ucGAbHsd before changing the website’s Coming soon wording to immediate beta availability.
+1. Unlock the Mac to recover the upload through Xcode Organizer. Local validation is complete: the signed build-4 archive is ready, 61 unit tests, 7 iPhone UI cases, and 2 iPad UI cases passed across their runs/retries, and one actual-Vision macOS fixture passed. Varied-portrait and physical-device quality checks remain part of internal testing.
+2. Upload through **App Store Connect** with `testFlightInternalTestingOnly=false`. After processing, verify that the existing Internal group received build 4 through automatic distribution, save the build-4 What to Test below, and confirm that its two existing testers can install it. No new tester invitation is needed.
+3. Stop at internal testing. Preserve the existing External group and review submission. Wait for the user to choose whether this same build should go external.
+4. On that later request, recheck Apple's current review state, add the same build to the existing External group, and submit Beta App Review if required. Apple allows only one build per version in review at once. Choose whether approved-build notifications should be automatic or sent manually at that time.
+5. Only after promotion and a verified installable public beta should public release copy, screenshots, or website availability be updated. The existing public link is https://testflight.apple.com/join/ucGAbHsd.
 
 App Store screenshots, App Store version build selection, and publication of the store privacy label are separate App Store release work. They are not prerequisites for adding a processed build to a TestFlight group or submitting its beta review. TestFlight uses its own beta description, What to Test, feedback email, and review contact details; invitation screenshots are optional. [Apple's TestFlight information workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/) and [build statuses](https://developer.apple.com/help/app-store-connect/reference/app-uploads/app-build-statuses/).
 
-## Beta copy — clarity update for build 3
+## What to Test — draft for build 4 (1,721 characters)
 
-The **Beta App Description and build-3 What to Test are saved**. Build-3 review notes remain prepared, not saved. Build 3 is processed and assigned internally; build 2 remains Waiting for Review externally and blocks another version-1.0 beta submission.
+Prepared for internal testers; not yet saved in App Store Connect. Copy only the text between this introduction and the next heading.
+
+Selfie Journey is completely free. No subscriptions or in-app purchases.
+
+This internal build adds a simpler framing guide and optional background removal for your time-lapse video. Your original photos stay unchanged, and all image processing happens on your device.
+
+- Try all four portrait distances in setup, Settings, and the camera. Each uses open corner brackets and a dotted eye line. Check that the guide is easy to follow without asking you to match a particular face shape. Try position and lighting advice, the previous-photo overlay, and the timer. Guides should not appear in saved selfies.
+- In Lookback, use photos from at least two different days. Create a video with Remove background off first, then turn it on and create another. The still-photo preview shows originals; removal is applied when the video is created.
+- Play the finished video before sharing. With removal on, each photo should have the same soft neutral backdrop. Check hair, glasses, ears, shoulders, varied lighting, and busy backgrounds. Fine edges can vary. Tell us about noticeable cutouts or flicker.
+- Change the pace, dates, or background option and recreate the video. Preview and sharing should use the new result, in date order. Check that the Journal and iCloud backups still contain the original photos.
+- Cancel an export and try again. If removal cannot finish or cannot find a person, it should stop with a clear message and offer Use original backgrounds; it should not quietly mix treated and untreated photos.
+
+Please report what happened and what you expected through the optional GitHub link in Settings. Keep private photos, notes, and personal information out of public issues. The app attaches no data or logs.
+
+## Build-4 implementation and validation boundary
+
+The fixed guide uses the same open-bracket and dotted-eye-line design for all four poses, scaled to each framing target; it contains no face or body silhouette. Background removal defaults off. When enabled, Apple's Vision person segmentation runs at accurate quality separately for every photo, and Core Image composites the export copy over `#EEECE4`. Original photos, notes, and backups are preserved. The finished MP4 has a native AVKit preview before sharing. A missing person or failed removal aborts the export and offers an explicit original-background retry.
+
+The build-4 run has passed 61 Swift Testing tests in 9 suites. The simulator's real-Vision smoke XCTest was skipped because its model is unavailable. Separately, the same production renderer passed an actual-Vision macOS check on one portrait fixture in 3.76 seconds, and the resulting PNG passed visual inspection. This demonstrates that fixture on macOS; it does not establish physical-iPhone quality or results across varied portraits. All 7 iPhone UI cases passed across the initial run and the targeted import-test retry, including the new export-invalidation case. Video-background controls and all four pose cards passed visual inspection. The iPad onboarding/pose-persistence and video-export/invalidation cases also passed. The video test was updated for native floating tabs, then passed after restarting a stalled simulator session. Results are in `/tmp/selfiejourney-build4-ipad.xcresult` (onboarding) and `/tmp/selfiejourney-build4-ipad-video-clean.xcresult` (video); both screens passed visual inspection. The signed archive is verified; the CLI upload attempt failed before delivery on account authentication, and a locked Mac prevents Organizer recovery. Real ML quality across varied faces, hair, clothing, lighting, and physical devices still needs internal testing. Follow the [product QA checklist](PRODUCT.md#validation-and-device-qa) before considering external promotion.
+
+## Historical beta copy — clarity update for build 3
+
+On September 6, the **Beta App Description and build-3 What to Test were saved**. Build-3 review notes remained prepared, not saved. Build 3 was processed and assigned internally; build 2 was Waiting for Review externally and blocked another version-1.0 beta submission. Keep this saved public beta description while testing build 4 internally; use the separate build-4 What to Test above for that build.
 
 ## Beta App Description — saved (1,044 characters)
 
@@ -97,7 +127,7 @@ Network-backed journal storage uses Apple's iCloud facilities. CryptoKit SHA-256
 | Support URL | <https://selfiejourney.com/support/> |
 | Sign-in required | No |
 | Review contact | Complete and saved in TestFlight; the actual phone number is intentionally not stored in this repository |
-| Public beta URL | https://testflight.apple.com/join/ucGAbHsd — existing link; build 2 is Waiting for Review |
+| Public beta URL | https://testflight.apple.com/join/ucGAbHsd — existing link; build 2 was Waiting for Review at the September 6 check |
 
 ## Release audit and distribution
 
@@ -107,56 +137,37 @@ The local project uses automatic signing, team `8U8LFWAQP6`, and the existing iC
 
 The source app icon is 1024×1024. Its redundant alpha channel was removed losslessly before the release archive: every original alpha value was 255, every RGB value and color metadata were preserved, and `sips` confirms `hasAlpha: no`. The original build-1 signed archive and App Store Connect export/upload subsequently succeeded. Build 2 also has a successful archive and was uploaded successfully through Xcode Organizer after CLI account lookup failed. The archived app passes `codesign --verify --deep --strict`; its privacy manifest validates and its bundled `ITSAppUsesNonExemptEncryption` value is `false`.
 
-Upload with the **App Store Connect** distribution method so the build remains eligible for external testing. Do not choose **TestFlight Internal Only** for the public beta. Create an internal testing group first, then an external group, attach the build, and provide the beta description, feedback email, review contact, review notes, and What to Test text. The first external build needs Apple's TestFlight review. [Apple's external tester workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers) and [test information requirements](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information).
+Upload with the **App Store Connect** distribution method even when the initial audience is internal. **TestFlight Internal Only** makes that upload ineligible for external distribution later. The normal upload remains eligible for both; group assignment controls who receives it. The existing Internal group's automatic distribution can add new Xcode uploads without adding them to External. [Apple's internal tester workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers/).
+
+Promotion is a separate, manual action after the user chooses it: TestFlight → External Testing → existing group → Add Builds → select the already uploaded build → supply What to Test/review information → Submit Review or Start Testing as offered. Preserve any existing review until its status is known. Automatic notification on an external build does not automatically add future uploads to that group. [Apple's external tester workflow](https://developer.apple.com/help/app-store-connect/test-a-beta-version/invite-external-testers/) and [test information requirements](https://developer.apple.com/help/app-store-connect/test-a-beta-version/provide-test-information/).
 
 The external group already has a public link. After approval, verify its enrollment page offers the latest build, then add that exact URL to the website. If Apple is still reviewing the build, the website should accurately describe the pending beta rather than implying visitors can install it immediately. [Apple's TestFlight overview](https://developer.apple.com/testflight/).
 
 ## Repeating the archive and upload
 
-Run from the repository root with the intended Apple Developer account signed into Xcode. For a later upload, first set a new build number and use a new archive path; builds `1`, `2`, and `3` have already been uploaded. Keep the existing bundle and iCloud identifiers.
-
-The successful **historical build-1** archive command is reproduced below. Builds 2 and 3 already exist at their numbered archive paths; preserve them and use a new path/number for any later binary:
+Run from the repository root with the intended Apple Developer account signed into Xcode. Use a new build number for each new upload and retain the numbered archive; builds `1`, `2`, and `3` have already been uploaded. Keep the existing bundle and iCloud identifiers. The checked-in helper accepts a build number and optional version and **archives only**:
 
 ```sh
-xcodebuild \
-  -project SelfieJourney.xcodeproj \
-  -scheme SelfieJourney \
-  -configuration Release \
-  -destination 'generic/platform=iOS' \
-  -derivedDataPath /tmp/selfiejourney-device-build \
-  -archivePath build/releases/SelfieJourney-1.0-1.xcarchive \
-  -allowProvisioningUpdates \
-  LD=/usr/bin/clang LDPLUSPLUS=/usr/bin/clang++ \
-  archive
+./scripts/archive-testflight.sh 4 1.0
 ```
 
-The upload's export options are retained in `build/releases/ExportOptions.plist` with these settings:
+It writes the signed archive under `build/releases/SelfieJourney-1.0-4.xcarchive`. Build products and logs remain gitignored. The helper preserves the required Apple Clang linker overrides and does not upload, add testers, submit review, or notify anyone.
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>method</key><string>app-store-connect</string>
-  <key>destination</key><string>upload</string>
-  <key>signingStyle</key><string>automatic</string>
-  <key>teamID</key><string>8U8LFWAQP6</string>
-  <key>manageAppVersionAndBuildNumber</key><false/>
-  <key>testFlightInternalTestingOnly</key><false/>
-  <key>uploadSymbols</key><true/>
-</dict>
-</plist>
-```
+For the initial internal release, open that archive in Xcode Organizer, choose **Distribute App → App Store Connect**, and finish the upload. Do not choose TestFlight Internal Only. Wait for Connect processing; **Ready to Submit** supports internal distribution. Verify the correct build in the existing Internal group and save its What to Test. Leave External unchanged.
+
+For a command-line upload when the Xcode account is healthy, use the checked-in [export options](../release/ExportOptions-TestFlight.plist). This command uploads the archive but does not promote it externally:
 
 ```sh
 xcodebuild -exportArchive \
-  -archivePath build/releases/SelfieJourney-1.0-1.xcarchive \
-  -exportPath build/releases/export \
-  -exportOptionsPlist build/releases/ExportOptions.plist \
+  -archivePath build/releases/SelfieJourney-1.0-4.xcarchive \
+  -exportPath build/releases/export-1.0-4 \
+  -exportOptionsPlist release/ExportOptions-TestFlight.plist \
   -allowProvisioningUpdates
 ```
 
-Retained local evidence: `build/releases/archive-1.0-1.log` ends with `ARCHIVE SUCCEEDED`; `build/releases/upload-1.0-1.log` records the successful upload and package processing. The archive, export options, and logs are retained together under `/Users/oliver/dev/picaday/PicaDay/build/releases/`, which is gitignored. The original archive was created at `/tmp/selfiejourney-testflight/SelfieJourney-1.0-1.xcarchive` before being copied to this directory.
+The options use `method=app-store-connect`, `destination=upload`, automatic signing for team `8U8LFWAQP6`, `manageAppVersionAndBuildNumber=false`, and `testFlightInternalTestingOnly=false`. Retaining this last setting is what allows a later manual external promotion of the same build. Neither the archive helper nor the upload command schedules a promotion.
+
+If CLI export reports missing Xcode account credential keys, use the valid account in Organizer to upload the existing signed archive. Do not infer upload success from an archive alone or a failed CLI log; verify Organizer's upload result and the processed build in Connect. Preserve earlier archives and evidence rather than replacing them with a later build.
 
 
 ## Build-2 upload recovery

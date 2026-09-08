@@ -15,7 +15,21 @@ struct SelfieJourneyApp: App {
             let inMemory = false
             #endif
             let configuration = ModelConfiguration(isStoredInMemoryOnly: inMemory, cloudKitDatabase: .none)
-            container = try ModelContainer(for: Portrait.self, configurations: configuration)
+            let journal = try ModelContainer(for: Portrait.self, configurations: configuration)
+            #if DEBUG
+            // Explicit UI fixtures exist only in the isolated in-memory test journal.
+            // Release builds can never seed photos or count sample data as a user's streak.
+            if inMemory, ProcessInfo.processInfo.arguments.contains("--uitesting-with-portraits"),
+               let sample = UIImage(named: "PortraitInspiration"),
+               let data = sample.jpegData(compressionQuality: 0.9) {
+                for offset in 0..<3 {
+                    let date = Calendar.current.date(byAdding: .day, value: -offset, to: Date())!
+                    journal.mainContext.insert(Portrait(date: date, imageData: data))
+                }
+                try journal.mainContext.save()
+            }
+            #endif
+            container = journal
             startupError = nil
         } catch {
             container = nil

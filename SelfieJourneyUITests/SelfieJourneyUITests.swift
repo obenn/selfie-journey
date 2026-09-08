@@ -35,7 +35,11 @@ final class SelfieJourneyUITests: XCTestCase {
         }
         for _ in 0..<5 {
             if isVisibleForInteraction() { return }
-            app.swipeUp()
+            if element.exists, element.frame.midY < app.frame.minY + 80 {
+                app.swipeDown()
+            } else {
+                app.swipeUp()
+            }
         }
         XCTAssertTrue(isVisibleForInteraction(), "Expected this control to be reachable by scrolling: \(element)")
     }
@@ -138,8 +142,12 @@ final class SelfieJourneyUITests: XCTestCase {
         let cancelPicker = app.buttons["Cancel"].firstMatch
         XCTAssertTrue(cancelPicker.waitForExistence(timeout: 5))
         cancelPicker.tap()
-        XCTAssertTrue(app.buttons["capture.close"].waitForExistence(timeout: 5))
-        app.buttons["capture.close"].tap()
+        let closeCapture = app.buttons["capture.close"]
+        let pickerDismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "hittable == true"), object: closeCapture
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [pickerDismissed], timeout: 5), .completed)
+        closeCapture.tap()
         XCTAssertTrue(app.buttons["today.capture"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["capture.save"].exists)
     }
@@ -203,5 +211,37 @@ final class SelfieJourneyUITests: XCTestCase {
         XCTAssertTrue(app.switches["settings.reminderToggle"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.switches["settings.reminderToggle"].value as? String, "0")
         app.buttons["settings.done"].tap()
+    }
+
+    @MainActor
+    func testVideoBackgroundChoiceInvalidatesFinishedExport() {
+        let app = XCUIApplication()
+        app.launchArguments = ["--uitesting", "--uitesting-with-portraits"]
+        app.launch()
+        XCTAssertTrue(app.buttons["today.capture"].waitForExistence(timeout: 10))
+        // Native iPad tabs use floating item cells rather than an iPhone TabBar.
+        app.descendants(matching: .any).matching(identifier: "Lookback").firstMatch.tap()
+
+        let background = app.switches["lookback.removeBackground"]
+        reveal(background, in: app)
+        XCTAssertEqual(background.value as? String, "0", "Original backgrounds should be the default")
+        background.switches.firstMatch.tap()
+        XCTAssertEqual(background.value as? String, "1")
+        keepScreenshot("video-background-options", app: app)
+        background.switches.firstMatch.tap()
+
+        let create = app.buttons["lookback.createVideo"]
+        reveal(create, in: app)
+        create.tap()
+        let share = app.buttons["lookback.shareVideo"]
+        XCTAssertTrue(share.waitForExistence(timeout: 30), "The original-background export should finish")
+        XCTAssertTrue(app.staticTexts["Your video is ready to play"].exists)
+
+        reveal(background, in: app)
+        background.switches.firstMatch.tap()
+        XCTAssertEqual(background.value as? String, "1")
+        XCTAssertFalse(share.exists, "A video made with previous settings must not remain shareable")
+        XCTAssertFalse(app.staticTexts["Your video is ready to play"].exists)
+        XCTAssertTrue(app.buttons["lookback.createVideo"].exists)
     }
 }

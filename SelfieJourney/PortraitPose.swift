@@ -1,9 +1,10 @@
+import CoreGraphics
 import Foundation
 
 /// A consistent portrait crop, shared by setup, the viewfinder, and Vision.
 /// Coordinates are normalized in the upright, mirrored 3:4 viewfinder, with
 /// the origin at its top-left. Face dimensions target Vision's face bounds;
-/// the decorative guide includes a little more room above the forehead.
+/// the open framing guide leaves room for different face shapes around those targets.
 nonisolated enum PortraitPose: String, CaseIterable, Identifiable, Sendable {
     case close
     case classic
@@ -50,4 +51,13 @@ nonisolated enum PortraitPose: String, CaseIterable, Identifiable, Sendable {
 
     var centerY: Double { 0.44 }
     var eyeLineY: Double { centerY - faceHeight * 0.12 }
+
+    /// A generous framing region, not a head or shoulder outline. This stays
+    /// fixed for each distance so it remains a useful reference across days.
+    var framingBounds: CGRect {
+        CGRect(x: 0.5 - faceWidth * 0.66,
+               y: centerY - faceHeight * 0.62,
+               width: faceWidth * 1.32,
+               height: faceHeight * 1.20)
+    }
 }

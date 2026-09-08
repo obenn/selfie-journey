@@ -1,3 +1,4 @@
+import AVKit
 import SwiftUI
 import SwiftData
 
@@ -10,11 +11,14 @@ struct LookbackView: View {
     @State private var isPlaying = false
     @State private var pace: VideoExporter.Pace = .balanced
     @State private var includeDates = true
+    @State private var removeBackground = false
     @State private var isExporting = false
     @State private var exportProgress = 0.0
     @State private var exportTask: Task<Void, Never>?
     @State private var exportedURL: URL?
+    @State private var exportedPlayer: AVPlayer?
     @State private var errorMessage: String?
+    @State private var backgroundRemovalFailed = false
 
     private var orderedPortraits: [Portrait] { portraits.sorted { $0.date < $1.date } }
     private var currentPortrait: Portrait? {
@@ -47,9 +51,13 @@ struct LookbackView: View {
                 .padding(.top, 20)
 
                 if let portrait = currentPortrait {
-                    filmPreview(portrait)
+                    if let exportedPlayer {
+                        finishedVideoPreview(exportedPlayer)
+                    } else {
+                        filmPreview(portrait)
+                    }
                     if canMakeFilm {
-                        playbackControls
+                        if exportedURL == nil { playbackControls.disabled(isExporting) }
                         filmOptions
                         exportControls
                     } else {
@@ -92,6 +100,10 @@ struct LookbackView: View {
             discardExport()
         }
         .onChange(of: includeDates) { _, _ in discardExport() }
+        .onChange(of: removeBackground) { _, _ in
+            isPlaying = false
+            discardExport()
+        }
         .onChange(of: portraits.map(\.id)) { _, _ in
             selectedIndex = min(selectedIndex, max(0, portraits.count - 1))
             isPlaying = false
@@ -106,14 +118,25 @@ struct LookbackView: View {
             discardExport()
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active { isPlaying = false }
+            if phase != .active {
+                isPlaying = false
+                exportedPlayer?.pause()
+            }
             if phase == .background { exportTask?.cancel() }
         }
         .onDisappear {
             isPlaying = false
+            exportedPlayer?.pause()
             exportTask?.cancel()
         }
-        .alert("Couldn't make your film", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+        .alert("Couldn't make your video", isPresented: Binding(get: { errorMessage != nil }, set: { if !$0 { errorMessage = nil } })) {
+            if backgroundRemovalFailed {
+                Button("Use original backgrounds") {
+                    removeBackground = false
+                    errorMessage = nil
+                    createFilm()
+                }
+            }
             Button("OK", role: .cancel) { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "Please try again.")
@@ -150,6 +173,28 @@ struct LookbackView: View {
                     .tracking(1.3)
                     .foregroundStyle(JourneyTheme.secondary)
             }
+            if removeBackground {
+                Text("Original photos shown here. Background removal is applied when you create your video.")
+                    .font(.caption)
+                    .foregroundStyle(JourneyTheme.secondary)
+                    .multilineTextAlignment(.center)
+                    .accessibilityIdentifier("lookback.backgroundPreviewNote")
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func finishedVideoPreview(_ player: AVPlayer) -> some View {
+        VStack(spacing: 14) {
+            VideoPlayer(player: player)
+                .aspectRatio(3 / 4, contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 26))
+                .frame(maxWidth: 310)
+                .accessibilityLabel("Finished time-lapse video")
+                .accessibilityIdentifier("lookback.finishedVideo")
+            Label("Your video is ready to play", systemImage: "checkmark.circle")
+                .font(.caption)
+                .foregroundStyle(JourneyTheme.secondary)
         }
         .frame(maxWidth: .infinity)
     }
@@ -214,6 +259,25 @@ struct LookbackView: View {
                     .font(.system(size: 14))
                     .foregroundStyle(JourneyTheme.ink)
             }
+            Divider()
+            VStack(alignment: .leading, spacing: 9) {
+                Toggle(isOn: $removeBackground) {
+                    Label("Remove background", systemImage: "person.crop.rectangle")
+                        .font(.system(size: 14))
+                        .foregroundStyle(JourneyTheme.ink)
+                }
+                .accessibilityIdentifier("lookback.removeBackground")
+                Text("Keep the focus on you with a soft, neutral backdrop in every frame. Processed on your device; your original photos stay untouched.")
+                    .font(.caption)
+                    .foregroundStyle(JourneyTheme.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if removeBackground {
+                    Label("Best with one person clearly visible. Hair and fine edges may vary. Takes a little longer to create.", systemImage: "sparkles")
+                        .font(.caption)
+                        .foregroundStyle(JourneyTheme.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
         }
         .padding(20)
         .background(JourneyTheme.surface, in: RoundedRectangle(cornerRadius: 22))
@@ -224,7 +288,7 @@ struct LookbackView: View {
         if isExporting {
             VStack(spacing: 13) {
                 HStack {
-                    Text(exportProgress >= 1 ? "Finishing your video…" : "Creating your time-lapse…")
+                    Text(exportProgress >= 1 ? "Finishing your video…" : (removeBackground ? "Removing backgrounds…" : "Creating your time-lapse…"))
                         .font(.system(size: 14, weight: .medium))
                     Spacer()
                     Text(exportProgress, format: .percent.precision(.fractionLength(0)))
@@ -250,6 +314,7 @@ struct LookbackView: View {
                         .background(JourneyTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("lookback.shareVideo")
                 Text("Your time-lapse video is ready. Save it to Files or share it.")
                     .font(.system(size: 12))
                     .multilineTextAlignment(.center)
@@ -266,6 +331,7 @@ struct LookbackView: View {
                         .background(JourneyTheme.accent, in: Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("lookback.createVideo")
                 Text("\(portraits.count) portraits · \(duration) · 1080p")
                     .font(.system(size: 11, weight: .medium, design: .monospaced))
                     .foregroundStyle(JourneyTheme.secondary)
@@ -355,11 +421,13 @@ struct LookbackView: View {
         let sources = orderedPortraits.map { (portrait: $0, revision: $0.imageRevision, date: $0.date) }
         let chosenPace = pace
         let dates = includeDates
+        let background: VideoExporter.Background = removeBackground ? .remove : .original
+        backgroundRemovalFailed = false
         isExporting = true
         exportProgress = 0
         exportTask = Task {
             do {
-                let url = try await VideoExporter().export(dates: sources.map(\.date), pace: chosenPace, includeDates: dates, imageDataAt: { index in
+                let url = try await VideoExporter().export(dates: sources.map(\.date), pace: chosenPace, includeDates: dates, background: background, imageDataAt: { index in
                     try Task.checkCancellation()
                     let source = sources[index]
                     guard source.portrait.modelContext != nil,
@@ -372,11 +440,18 @@ struct LookbackView: View {
                     try? FileManager.default.removeItem(at: url)
                 } else {
                     exportedURL = url
+                    exportedPlayer = AVPlayer(url: url)
                 }
             } catch is CancellationError {
                 // Cancelling leaves the portraits untouched and removes the partial film.
             } catch {
                 errorMessage = error.localizedDescription
+                if let exportError = error as? VideoExporter.ExportError {
+                    switch exportError {
+                    case .backgroundRemovalUnavailable, .personNotFound: backgroundRemovalFailed = true
+                    default: break
+                    }
+                }
             }
             isExporting = false
             exportTask = nil
@@ -384,6 +459,9 @@ struct LookbackView: View {
     }
 
     private func discardExport() {
+        exportedPlayer?.pause()
+        exportedPlayer?.replaceCurrentItem(with: nil)
+        exportedPlayer = nil
         if let exportedURL { try? FileManager.default.removeItem(at: exportedURL) }
         exportedURL = nil
     }

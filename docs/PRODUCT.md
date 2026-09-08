@@ -14,9 +14,10 @@ The tone is encouraging, with no score for appearance. A streak measures showing
 - Lead with the shared headline above. Use concrete words such as selfie, face guides, daily photos, and time-lapse video before introducing warmer language about memories.
 - Explain that guides help users line up the shot. Do not promise automatic alignment, correction after capture, or perfectly matched photos.
 - Say that the video uses photos the user actually took. Avoid wording that implies a prediction, simulated aging, or a generated older face.
+- Describe background removal as an optional treatment of video export copies. Original-photo previews stay labeled as originals until the finished video is available; do not promise perfect hair edges or changes to the saved journal.
 - Keep completely free/no subscriptions and no app data collection explicit. Describe optional backups as the user's private iCloud Drive storage.
 
-This copy revision is being prepared for build 3. The currently uploaded build 2 remains Waiting for Review; see [release status](TESTFLIGHT.md) for verified distribution facts.
+This document describes build-4 source: a generic guide and optional background removal are being prepared for internal testing first. Public website copy, App Store metadata, and screenshots remain on build 3. The user will choose later whether to promote the same new build externally; see [release status](TESTFLIGHT.md) for verified distribution facts and outstanding validation.
 
 Warm paper, sage, terracotta, restrained serif headlines, native SF Symbols, and subtle haptics frame the journal. The camera uses an uncluttered dark canvas. The rest of the app follows system appearance, with native light and dark color variants.
 
@@ -26,7 +27,7 @@ Warm paper, sage, terracotta, restrained serif headlines, native SF Symbols, and
 
 Setup introduces the journal and its no-data-collection design, asks for a portrait distance, and offers a daily reminder time. Notification permission is requested only after **Enable my daily reminder** is tapped. **Maybe later** preserves the chosen time with reminders off; denial provides a Settings route and a way to continue. Completion and pose choice persist across launches.
 
-Four illustrated choices control the camera guide and live distance advice:
+Four choices use the same open-bracket guide design at different framing sizes and control live distance advice:
 
 | Pose | Intent | Target face height within the 3:4 preview |
 | --- | --- | ---: |
@@ -35,7 +36,7 @@ Four illustrated choices control the camera guide and live distance advice:
 | Relaxed | A little breathing room | 39% |
 | Wide | More of your world | 30% |
 
-These are relative framing targets, not measured physical distances. Targets refer to Vision face bounds; the decorative oval includes forehead room. Settings offers the same choices. Each portrait records its pose, and the ghost overlay chooses the latest portrait with the current pose to avoid contradictory framing advice.
+These are relative framing targets, not measured physical distances. Targets refer to Vision face bounds; the framing area allows forehead room. Setup, Settings, and capture share a generic guide with open corner brackets and a dotted eye line. It stays fixed for the chosen pose and does not prescribe a face or body silhouette. Each portrait records its pose, and the ghost overlay chooses the latest portrait with the current pose to avoid contradictory framing advice.
 
 ### Today and motivation
 
@@ -47,7 +48,7 @@ Streaks deduplicate local days and ignore future dates. A run ending yesterday s
 
 ### Camera and on-device guidance
 
-AVFoundation provides mirrored front-camera preview and capture in a centered upright 3:4 crop. Its rotation coordinator pairs preview and capture orientation, including supported iPad layouts. Guides show the selected face oval, dotted eye line, center line, and shoulder marks. The same-pose ghost overlay has adjustable opacity and can be switched off.
+AVFoundation provides mirrored front-camera preview and capture in a centered upright 3:4 crop. Its rotation coordinator pairs preview and capture orientation, including supported iPad layouts. The generic guide shows open corner brackets and a dotted eye line, with the same style across all four poses. Alignment can change its emphasis, but it does not trace the user's anatomy. The same-pose ghost overlay has adjustable opacity and can be switched off.
 
 Apple Vision landmarks and face observations drive one actionable hint at a time: bring a face into view, leave room for one person, move closer/farther, center left/right, raise/lower eye height, face forward, level the head, or adjust chin angle. Face, position, and light indicators complement the hint. Advice is stabilized across samples to reduce flicker.
 
@@ -70,6 +71,12 @@ Lookback orders portraits chronologically, provides play/pause and a scrubber, a
 | Quick | 0.2 | 6 |
 
 Export is a silent **1080 × 1440 H.264 MP4 at 30 fps**, rendered on device with direct cuts. Progress and cancellation are available. The exporter decodes one portrait at a time; image revisions invalidate older films after retakes. Errors and cancellation remove incomplete outputs. A completed film is temporary until saved through the share sheet and does not replace a journal backup.
+
+**Remove background** is an optional export setting and defaults off. When enabled, `VNGeneratePersonSegmentationRequest` runs at `.accurate` quality with a fresh request for every photo; unrelated daily images do not share temporal segmentation state. Core Image uses each mask to place the person over the same warm neutral `#EEECE4` backdrop. This processes export copies only: it does not edit stored portraits, notes, or iCloud backups, and nothing is uploaded for processing.
+
+Before export, the still-photo preview shows originals and explicitly says background removal is applied when the video is created. After export, native AVKit playback shows the actual generated MP4 before **Share your video**. Changing pace, dates, background choice, or source photo revisions invalidates the earlier output. Fine hair and other edges can vary, and removal takes additional time. The production renderer passed an actual-Vision macOS check on one portrait fixture, with the PNG visually checked. The simulator's Vision check was skipped because its model was unavailable. Real-photo quality across varied portraits and physical devices remains part of internal testing; deterministic mask tests establish composition and error handling, not ML accuracy.
+
+A missing person, unusable mask, or failed removal stops the whole export and removes its incomplete file. The app offers **Use original backgrounds** as an explicit retry rather than silently combining processed and original backgrounds. Cancellation also stops work and cleans incomplete output; it is not reported as a segmentation failure.
 
 ### Daily reminders
 
@@ -111,10 +118,10 @@ Unsigned simulator builds and local archive tests validate app behavior, not App
 | App and data | `SelfieJourneyApp.swift`, `ContentView.swift`, `Portrait.swift`, `PortraitStore.swift` | Local SwiftData, daily save, presentation, lifecycle refresh. |
 | Setup | `OnboardingView.swift`, `JourneyPreferences.swift`, `PortraitPose.swift`, `RitualSettingsView.swift` | Persistent setup, native illustrations, frame and reminder settings. |
 | Motivation | `TodayView.swift`, `StreakCalculator.swift`, `StreakProgress.swift`, `StreakCelebrationView.swift` | Calendar streaks, weekly progress, milestones, save acknowledgement. |
-| Camera | `CaptureView.swift`, `CameraService.swift`, `FaceGuidance.swift` | AVFoundation, Vision sampling, hint policy, timer, ghost overlay, PhotosPicker. |
+| Camera | `CaptureView.swift`, `CameraService.swift`, `FaceGuidance.swift`, `PortraitFramingGuide.swift` | AVFoundation, Vision sampling, hint policy, shared generic brackets/eye line, timer, ghost overlay, PhotosPicker. |
 | Journal | `PortraitImageProcessor.swift`, `LibraryView.swift` | Normalized 1200 × 1600 JPEGs, ImageIO thumbnails, notes, sharing, deletion. |
 | Backup | `CloudBackupManager.swift`, `BackupArchive.swift`, `CloudBackupSection.swift` | iCloud snapshots, integrity, upload state, merge restore. |
-| Film | `LookbackView.swift`, `VideoExporter.swift` | Playback, AVAssetWriter export, native sharing. |
+| Film | `LookbackView.swift`, `VideoExporter.swift`, `PersonBackgroundRenderer.swift` | Original-photo playback, optional Vision/Core Image background removal, AVAssetWriter export, finished-video AVKit preview, native sharing. |
 | Reminders | `ReminderManager.swift` | Authorization and serialized UserNotifications scheduling. |
 | Privacy and external support | `CommunitySettingsSection.swift`, `PrivacyMigration.swift` | No-collection explanation, browser links to GitHub, removal of obsolete reporting defaults on upgrade. |
 | Appearance | `JourneyTheme.swift`, `Assets.xcassets` | Adaptive colors, common controls, type, icon, inspiration image. |
@@ -141,7 +148,7 @@ The previous feedback/telemetry intake is retired. The admin site remains protec
 
 See [operations](OPERATIONS.md) for exact data boundaries, retention, deployment, and release privacy checks.
 
-The framing example at `SelfieJourney/Assets.xcassets/PortraitInspiration.imageset/portrait.png` was generated with ImageGen: a natural vertical 3:4 adult portrait, neutral expression, centered face, eye-level lens, plain warm background, and soft frontal daylight. It is decorative, never inserted as user data, counted toward a streak, or included in a film. Setup pose previews are native abstract illustrations.
+The decorative example asset at `SelfieJourney/Assets.xcassets/PortraitInspiration.imageset/portrait.png` was generated with ImageGen. It is never inserted as user data, counted toward a streak, or included in a film. Build-4 setup, Settings, and capture guides use native generic brackets and an eye line, with no anatomy silhouette. Existing public screenshots remain the build-3 set until a later release decision.
 
 ## Validation and device QA
 
@@ -154,10 +161,13 @@ Automated sources are in `SelfieJourneyTests` and `SelfieJourneyUITests`. They c
 - [ ] Restore: empty journal, missing days, preservation of newer local retakes, recovery of a deleted day from older history, partial-download retry, and restored notes/poses.
 - [ ] Camera: preview/review/save/ghost/export mirroring and orientation on iPhone/iPad, supported rotations, landscape capture, and multitasking.
 - [ ] Guidance: every distance, left/right and eye-height correction, yaw/roll/pitch, multiple/no faces, glasses, occlusion, varied complexions, and frontal/low/backlit conditions. Calibrate without restricting manual capture.
+- [ ] Generic guide: all four poses in setup, Settings, and capture; consistent brackets/eye line, stable sizing, no anatomy silhouette, readable alignment emphasis, and no guide burned into saved photos. Check iPhone/iPad, rotations, and accessibility sizes.
 - [ ] Lifecycle: timer cancel, rapid taps, leaving capture, backgrounding, interruptions, denied permission/recovery, unavailable-camera retry, and rotated imports.
 - [ ] Journal: one record per day, retakes, relaunch persistence, note cancel/save, deletion, and streak changes. Check midnight/time-zone/DST behavior.
 - [ ] Notifications: actual delivery, cancellation after saving, changed times, disabled reminders, permission changes, and time-zone refresh.
 - [ ] Film: every pace, chronology, captions, crop, resolution, duration, cancellation, low-storage errors, and native sharing destinations.
+- [ ] Background removal: off by default; real photos with fine/curly hair, glasses, ears, shoulders, varied skin/clothing/background colors, low light, and busy scenes. Compare offline output with originals; confirm stored photos and backups remain unchanged. This ML quality check is still pending.
+- [ ] Processed-video flow: original still previews are clearly labeled, finished AVKit preview matches the shared MP4, changed options discard the old output, and removal errors stop export with an original-background retry. Check no-person photos, cancellation, backgrounding, and longer collections for mixed styles, stale frames, memory, and thermals.
 - [ ] Accessibility: VoiceOver, large Dynamic Type, Reduce Motion, light/dark switching, small screens, and iPad. Verify controls remain reachable.
 - [ ] Privacy upgrade: confirm obsolete telemetry identifiers/log defaults are removed while portraits, reminders, and backups remain. Confirm no analytics or feedback requests occur during normal use.
 - [ ] External support: verify GitHub links open in the browser with no appended identifiers, logs, or user content; privacy messaging matches the empty collected-data manifest.

@@ -6,6 +6,14 @@ import UIKit
 
 /// A serial encoder that requests and decodes one portrait at a time.
 actor VideoExporter {
+    private let maskProvider: PersonBackgroundRenderer.MaskProvider?
+    private let temporaryDirectory: URL
+
+    init(maskProvider: PersonBackgroundRenderer.MaskProvider? = nil, temporaryDirectory: URL = FileManager.default.temporaryDirectory) {
+        self.maskProvider = maskProvider
+        self.temporaryDirectory = temporaryDirectory
+    }
+
     struct Frame: Sendable {
         let imageData: Data
         let date: Date
@@ -27,11 +35,20 @@ actor VideoExporter {
         var secondsPerPortrait: Double { Double(framesPerPortrait) / 30 }
     }
 
-    enum ExportError: LocalizedError {
+    enum Background: String, CaseIterable, Identifiable, Sendable {
+        case original = "Original"
+        case remove = "Remove background"
+
+        var id: Self { self }
+    }
+
+    enum ExportError: LocalizedError, Equatable {
         case notEnoughPortraits
         case cannotCreateVideo
         case unreadablePortrait
         case encodingFailed
+        case backgroundRemovalUnavailable
+        case personNotFound
 
         var errorDescription: String? {
             switch self {
@@ -39,12 +56,14 @@ actor VideoExporter {
             case .cannotCreateVideo: "This device couldn't prepare the video. Please try again."
             case .unreadablePortrait: "One of your portraits couldn't be opened. Your collection hasn't been changed."
             case .encodingFailed: "The video couldn't be finished. Check your available storage and try again."
+            case .backgroundRemovalUnavailable: "This device couldn't remove a portrait's background. Try again, or turn off Remove background to use the original backgrounds. Your photos haven't been changed."
+            case .personNotFound: "A person couldn't be found clearly in one of your portraits. Turn off Remove background to use the original backgrounds. Your photos haven't been changed."
             }
         }
     }
 
-    func export(frames: [Frame], pace: Pace, includeDates: Bool, progress: @escaping @Sendable (Double) -> Void) async throws -> URL {
-        try await export(dates: frames.map(\.date), pace: pace, includeDates: includeDates, imageDataAt: { index in
+    func export(frames: [Frame], pace: Pace, includeDates: Bool, background: Background = .original, progress: @escaping @Sendable (Double) -> Void) async throws -> URL {
+        try await export(dates: frames.map(\.date), pace: pace, includeDates: includeDates, background: background, imageDataAt: { index in
             frames[index].imageData
         }, progress: progress)
     }
@@ -55,6 +74,7 @@ actor VideoExporter {
         dates: [Date],
         pace: Pace,
         includeDates: Bool,
+        background: Background = .original,
         imageDataAt: @escaping @MainActor @Sendable (Int) throws -> Data,
         progress: @escaping @Sendable (Double) -> Void
     ) async throws -> URL {
@@ -63,7 +83,7 @@ actor VideoExporter {
         let orderedIndices = dates.indices.sorted {
             dates[$0] == dates[$1] ? $0 < $1 : dates[$0] < dates[$1]
         }
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("SelfieJourney-\(UUID().uuidString).mp4")
+        let url = temporaryDirectory.appendingPathComponent("SelfieJourney-\(UUID().uuidString).mp4")
         let writer = try AVAssetWriter(outputURL: url, fileType: .mp4)
         let width = 1080
         let height = 1440
@@ -98,13 +118,17 @@ actor VideoExporter {
         guard writer.startWriting() else { throw writer.error ?? ExportError.cannotCreateVideo }
         writer.startSession(atSourceTime: .zero)
         guard let pool = adaptor.pixelBufferPool else { throw ExportError.cannotCreateVideo }
+        // A renderer lives only for this export. It never retains portraits or masks
+        // across days, and the original path does not initialize Vision or Core Image.
+        let backgroundRenderer = background == .remove ? PersonBackgroundRenderer(maskProvider: maskProvider) : nil
 
         var frameNumber: Int64 = 0
         for (index, sourceIndex) in orderedIndices.enumerated() {
             try Task.checkCancellation()
             let buffer = try await loadPixelBuffer(
                 index: sourceIndex, date: dates[sourceIndex], imageDataAt: imageDataAt,
-                pool: pool, width: width, height: height, includeDate: includeDates
+                pool: pool, width: width, height: height, includeDate: includeDates,
+                backgroundRenderer: backgroundRenderer
             )
             for _ in 0..<pace.framesPerPortrait {
                 try Task.checkCancellation()
@@ -137,25 +161,42 @@ actor VideoExporter {
         pool: CVPixelBufferPool,
         width: Int,
         height: Int,
-        includeDate: Bool
+        includeDate: Bool,
+        backgroundRenderer: PersonBackgroundRenderer?
     ) async throws -> CVPixelBuffer {
         try Task.checkCancellation()
         let data = try await imageDataAt(index)
         try Task.checkCancellation()
-        // The compressed image and the decoded CGImage leave scope before the next request.
+        // Bake EXIF orientation before segmentation so the mask and photo share the
+        // same coordinates. Decode only to export resolution to bound working memory.
+        let image = try autoreleasepool {
+            try Self.decodePortrait(data, maximumPixelSize: max(width, height))
+        }
+        let outputImage: CGImage
+        if let backgroundRenderer {
+            outputImage = try await backgroundRenderer.removingBackground(from: image)
+        } else {
+            outputImage = image
+        }
+        try Task.checkCancellation()
+        // Segment once per portrait, then reuse this opaque buffer for every hold frame.
         return try autoreleasepool {
-            try Self.makePixelBuffer(frame: Frame(imageData: data, date: date), pool: pool, width: width, height: height, includeDate: includeDate)
+            try Self.makePixelBuffer(image: outputImage, date: date, pool: pool, width: width, height: height, includeDate: includeDate)
         }
     }
 
-    private static func makePixelBuffer(frame: Frame, pool: CVPixelBufferPool, width: Int, height: Int, includeDate: Bool) throws -> CVPixelBuffer {
-        guard let source = CGImageSourceCreateWithData(frame.imageData as CFData, nil),
+    static func decodePortrait(_ data: Data, maximumPixelSize: Int) throws -> CGImage {
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
               let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [
                 kCGImageSourceCreateThumbnailFromImageAlways: true,
                 kCGImageSourceCreateThumbnailWithTransform: true,
-                kCGImageSourceThumbnailMaxPixelSize: max(width, height),
+                kCGImageSourceThumbnailMaxPixelSize: maximumPixelSize,
                 kCGImageSourceShouldCacheImmediately: true
               ] as CFDictionary) else { throw ExportError.unreadablePortrait }
+        return image
+    }
+
+    private static func makePixelBuffer(image: CGImage, date: Date, pool: CVPixelBufferPool, width: Int, height: Int, includeDate: Bool) throws -> CVPixelBuffer {
         var optionalBuffer: CVPixelBuffer?
         guard CVPixelBufferPoolCreatePixelBuffer(nil, pool, &optionalBuffer) == kCVReturnSuccess,
               let buffer = optionalBuffer else { throw ExportError.cannotCreateVideo }
@@ -187,7 +228,7 @@ actor VideoExporter {
             UIGraphicsPushContext(context)
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = .center
-            let caption = frame.date.formatted(.dateTime.month(.wide).day().year())
+            let caption = date.formatted(.dateTime.month(.wide).day().year())
             (caption as NSString).draw(in: CGRect(x: 50, y: size.height - 95, width: size.width - 100, height: 48), withAttributes: [
                 .font: UIFont.systemFont(ofSize: 30, weight: .medium),
                 .foregroundColor: UIColor.white,

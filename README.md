@@ -4,16 +4,19 @@
 
 Take a selfie every day, use face guides to keep your face in a similar position, and turn your saved photos into a time-lapse video. Over months and years, see how you change with age. Selfie Journey is a native iPhone and iPad app that makes this daily habit easy to keep.
 
-Built with SwiftUI, SwiftData, AVFoundation, Vision, PhotosUI, UserNotifications, iCloud Drive, and CryptoKit. The iOS app has no third-party packages or separate account. The app collects no data: there is no analytics, device identifier, feedback upload, or diagnostic transport. Optional support links open GitHub in the system browser. Selfie Journey is completely free, with no subscriptions or in-app purchases.
+Built with SwiftUI, SwiftData, AVFoundation, AVKit, Vision, Core Image, PhotosUI, UserNotifications, iCloud Drive, and CryptoKit. The iOS app has no third-party packages or separate account. The app collects no data: there is no analytics, device identifier, feedback upload, or diagnostic transport. Optional support links open GitHub in the system browser. Selfie Journey is completely free, with no subscriptions or in-app purchases.
+
+Build 4 adds a generic framing guide and optional video background removal. It is being prepared for **internal TestFlight testing first**; upload and tester availability are not yet verified. Public website copy, App Store metadata, and screenshots remain on build 3. See [release status and procedure](docs/TESTFLIGHT.md) for current evidence and the later manual promotion step.
 
 ## The experience
 
 - **A personal start:** first-open setup chooses one of four portrait distances and a daily reminder time. Notification permission is requested from the Enable button; skipping is always available. Change both later in Your daily ritual.
 - **A reason to return:** a prominent streak card, weekly completion marks, progress toward milestones, and a small save celebration. Missing a day never removes the portraits already collected.
-- **Consistent face framing:** use the mirrored front camera, face and eye-line guides, and optional three-second timer. A subtle overlay of a previous photo helps you line up the next selfie before taking it.
+- **Consistent face framing:** use the mirrored front camera, open corner brackets, a dotted eye line, and an optional three-second timer. All four poses share the same generic guide without a face or body silhouette. A subtle overlay of a previous photo helps you line up the next selfie before taking it.
 - **Live guidance:** Apple's on-device Vision landmarks help with distance, centering, eye height, and head angle. Brightness checks suggest more frontal light or less backlighting. Hints are advisory; capture stays under the user's control.
 - **A portrait journal:** review, retake, notes, month groups, sharing, and confirmed deletion. A same-day retake updates that day instead of adding extra streak credit.
-- **A time-lapse of your real photos:** Lookback plays your daily selfies in date order, showing how your face changes over time. Choose among three speeds, show or hide dates, and create an MP4 video on device to save or share.
+- **A time-lapse of your real photos:** Lookback plays your daily selfies in date order, showing how your face changes over time. Choose among three speeds, show or hide dates, and create an MP4 video on device. Play the finished video before saving or sharing it.
+- **An optional consistent backdrop:** Remove background defaults off. Turn it on to place the person in each video frame over a soft neutral background using Apple's on-device Vision and Core Image. Original photos and backups stay untouched. Still previews show originals until export; fine edges vary, and real-photo quality is part of internal testing.
 - **iCloud backups:** dated portrait-and-note snapshots, automatic and manual backup, upload status, and restore of missing days while preserving the journal already on the device.
 - **No data collected:** face guidance, journaling, and film creation run on device. Private iCloud backups belong to the user. Upgrading clears the obsolete reporting identifiers and local diagnostic defaults.
 - **A place for ideas:** settings opens [GitHub Issues](https://github.com/obenn/selfie-journey/issues) in the browser without attaching logs, identifiers, or app content. Users choose what to post; issues may be public.
@@ -58,7 +61,17 @@ To add an image to a booted simulator's photo library:
 xcrun simctl addmedia booted /absolute/path/to/your-portrait.jpg
 ```
 
-Imports belong to the day they are saved; EXIF dates do not backfill the journal. The decorative first-use portrait is an example and never becomes a journal entry or streak day.
+Imports belong to the day they are saved; EXIF dates do not backfill the journal. Decorative examples never become journal entries or streak days.
+
+### Internal TestFlight releases
+
+The archive helper accepts a build number and optional version and does not publish:
+
+```sh
+./scripts/archive-testflight.sh 4 1.0
+```
+
+Upload the resulting signed archive through **App Store Connect**, verify the processed build in the existing Internal group, and save its What to Test. Keep `testFlightInternalTestingOnly=false` so the same binary remains eligible for external testers later. **TestFlight Internal Only** would prevent that later promotion. Add the build to External only when the user chooses; no promotion or notification is scheduled. See [the full release procedure](docs/TESTFLIGHT.md#repeating-the-archive-and-upload).
 
 ## Tests and device checks
 
@@ -75,11 +88,11 @@ Tests cover calendar streaks and milestones, reminder scheduling, onboarding pre
 
 The web project is in `web/`. Use `npm ci`, `npm run typecheck`, `npm test`, and `npm run build` there. See [operations and release notes](docs/OPERATIONS.md) for Cloudflare resources, deployment, API contracts, retention, and App Store privacy details.
 
-Camera calibration across faces and devices, actual notification delivery, iCloud provisioning/upload/restore, system appearance, and sharing need physical-device QA. See [product and QA notes](docs/PRODUCT.md).
+Camera calibration across faces and devices, background-removal quality on real portraits, actual notification delivery, iCloud provisioning/upload/restore, system appearance, and sharing need physical-device QA. Background-removal tests with deterministic masks do not establish Apple's real-world segmentation quality. See [product and QA notes](docs/PRODUCT.md).
 
 ## Your photos
 
-Portraits are normalized **1200 × 1600 JPEGs**. Films are **1080 × 1440, 30 fps H.264 MP4s**. Vision processes live frames on device without storing face templates or recognizing identity.
+Portraits are normalized **1200 × 1600 JPEGs**. Films are **1080 × 1440, 30 fps H.264 MP4s**. Vision processes live frames on device without storing face templates or recognizing identity. Optional video background removal processes export copies with a fresh person mask for each photo and a `#EEECE4` backdrop; it preserves the journal. If removal fails, export stops and offers a retry with original backgrounds.
 
 Automatic iCloud backups default on when iCloud Drive is available and can be disabled in settings. Versioned snapshots preserve capture dates, notes, pose choices, and immutable image revisions with SHA-256 checksums. Unchanged snapshots are reused. **Deleting a local portrait does not delete it from older backups.** Restore adds missing local-calendar days and keeps existing days; there is no automatic cross-device merge or backup-history deletion control.
 
