@@ -1,42 +1,43 @@
 # Selfie Journey — App Store metadata
 
-Updated September 7, 2026. **Public metadata and screenshots remain on build 3 while build 4 is prepared for internal testing.** Build 4's generic framing guide and optional on-device background removal have not been added to the public listing or website. Its signed archive is verified; one CLI upload attempt failed before delivery on Xcode account authentication, and Organizer recovery is blocked while the Mac is locked. Later external promotion requires the user's choice.
+Updated September 16, 2026. **The user chose to submit 1.0 (3) for the initial App Store release and keep build 4 for later.** App Store Connect still selects build 3. This audit has not yet completed the submission; do not describe it as submitted or approved.
 
-The Connect results below were last verified on September 6. At that time build 2 was Waiting for Review externally, build 3 was Ready to Submit and assigned to two internal testers, and App Store Distribution selected build 3. The App Store release had not been submitted for review. Recheck the current review state before taking a later release action; these are historical observations.
+Build 4 remains a verified local signed archive and is absent from the remote build list. Its generic framing guide and optional background removal are outside this submission. Public copy and screenshots continue to describe build 3.
 
 ## Current completion status
 
-| Area | Last verified status, September 6 unless noted |
+| Area | Last verified status |
 | --- | --- |
-| Build 4 preparation | `build/releases/SelfieJourney-1.0-4.xcarchive` succeeded; bundled **1.0 (4)** and code signature verified. One CLI export/upload attempt failed before delivery with **Failed to Use Accounts** because a stale saved account lacked `Xcode-Token`. Locked Mac prevents Organizer recovery; no verified delivery or external promotion |
-| Build-4 validation, September 7 | **61 Swift Testing tests in 9 suites passed**. **All 7 iPhone UI cases passed across the initial run and targeted retry**, including export invalidation; the import test passed after its photo-picker dismissal wait was corrected. Video-background options and four pose cards visually checked. Both relevant iPad cases passed: onboarding/pose persistence and video export/invalidation, with the latter using a corrected native-tab selector and a clean simulator session. Their screenshots passed visual inspection |
-| Build-4 background-removal evidence | Simulator real-Vision smoke skipped because its model is unavailable. The production renderer passed actual Vision on one macOS fixture in **3.76 seconds**, with a visually checked PNG. No physical-iPhone or broad portrait-quality pass claimed |
-| App information | Subtitle “Daily selfies to time-lapse”, primary Photo & Video, secondary Lifestyle, and calculated **4+** age rating saved |
-| Privacy URLs | Policy and Choices both saved as https://selfiejourney.com/privacy/ |
-| Privacy draft | **Data Not Collected** saved and preview verified for the replacement build 2; not yet published |
-| Version metadata | Clarity copy saved and revisited in Connect: subtitle 27 characters, promotional text 166, description 1,971, keywords 85 ASCII bytes |
-| Native clarity revision | **1.0 (3)** uploaded and processed; Connect lists September 6 at **8:14 PM America/Toronto**. Status **Ready to Submit**, assigned to the internal group’s 2 testers |
-| Beta review fields | Actual contact complete and saved privately; Sign-in Required = No. New 1,044-character beta description saved. Build-3 What to Test (1,434 characters) saved and confirmed; build-3 review notes remain prepared, not saved. Earlier build-2 review notes remain |
-| App Store review fields | Distribution-form contact/notes were previously incomplete; recheck separately before a public App Store submission. Use the contact already provided rather than asking for it again |
-| Builds | Build 3 was processed and assigned internally. Build 2 was **Waiting for Review** externally; Connect permits only one build per version in beta review at a time. **App Store Distribution selected build 3**, saved and verified |
-| App icon | Connect's icon preview verified against the bundled icon |
-| Native verification | Build 3: 4 functional iPhone UI tests, 1 light iPhone capture test, and 1 iPad UI test passed. Earlier build-2 baseline: 49 unit tests and 7 UI tests passed |
-| Website/service | Clarity copy live: deployment `a220c401-cf84-464e-ba93-170405040f3f`, Worker version `98be3939-40f6-4d3b-ac65-8adfc77891df`, September 7 at 00:12:34 UTC. See [deployment evidence](DEPLOYMENT.md) |
-| TestFlight external | Existing group: **1 tester, 1 build**, build 2 **Waiting for Review**; automatic tester notification enabled. Existing public link: https://testflight.apple.com/join/ucGAbHsd; testers cannot join until the group has an approved build |
-| TestFlight internal | **2 existing testers**, added manually by the user; build 3 assigned automatically and available for internal testing |
-| Previous build | Build 1 is expired in TestFlight |
-| Screenshots | **All six build-3 screenshots uploaded and verified in Connect**: Today, Poses, Onboarding for iPhone 6.9-inch and iPad 13-inch. Both sections show 3 of 10 screenshots with matching filenames |
+| Release choice, September 16 | **1.0 (3)** selected in Distribution; user explicitly chose build 3 for App Store review and build 4 later |
+| Submission, September 16 | **Not submitted yet**. Review fields, privacy publication, pricing/availability, and Apple's final validation still need completion/checks |
+| App Store review fields, September 16 | Contact and notes blank; **Sign-in Required is Yes** and must become No. Reuse the contact already saved privately in TestFlight; paste-ready app review notes appear below |
+| Browser access, September 16 | Safari repeatedly lost its window during automation. An in-app App Store Connect tab is open at Apple sign-in and retained for handoff; user sign-in is required to continue. No submission fields were changed during this audit |
+| Privacy | **Data Not Collected** draft and policy/choices URLs were saved previously. Publication must be rechecked before submitting |
+| Pricing and availability | Free is the intended price; confirm saved pricing and existing territory/release choices before submission |
+| App information | Previously saved subtitle “Daily selfies to time-lapse”, Photo & Video / Lifestyle categories, and calculated **4+** age rating |
+| Version metadata | Saved clarity copy: subtitle 27 characters, promotional text 166, description 1,971, keywords 85 ASCII bytes; entirely free with no subscriptions or in-app purchases |
+| Build 3, September 16 | Processed, **Ready to Submit**, assigned to Internal; selected for this App Store submission |
+| Build 2, September 16 | External TestFlight status is now **Testing**: Apple approved the beta. This is separate from App Store review |
+| Build 4, September 16 | **Local only; absent from Connect**. `build/releases/SelfieJourney-1.0-4.xcarchive` is verified as 1.0 (4). Earlier CLI upload failed on saved Xcode account authentication; no verified delivery |
+| Screenshots, September 16 | The live form reconfirmed **3 iPhone screenshots using the 6.9-inch set**. The 3 iPad 13-inch screenshots were verified on September 6 and still need a fresh submission check. Both sets use native Today, Poses, and Onboarding images for build 3 |
+| App icon | Previously verified Connect preview matches the opaque bundled 1024×1024 icon |
+| Build-3 validation | 4 functional iPhone UI tests, 1 light iPhone capture test, and 1 iPad UI test passed. Earlier build-2 baseline: 49 unit and 7 UI tests passed |
+| Build-4 validation, September 7 | 61 unit tests, all 7 iPhone UI cases across the original run/retry, and 2 targeted iPad UI cases passed. Actual Vision passed one macOS fixture; simulator real-Vision smoke skipped. Build 4 is outside this submission |
+| Support and privacy, September 16 | https://selfiejourney.com/support/ and https://selfiejourney.com/privacy/ return HTTP 200. The user made the GitHub repository public; anonymous repository and Issues requests now both return HTTP 200 |
+| Website | No deployment during this submission audit. Existing copy remains on build 3; see [deployment history](DEPLOYMENT.md) |
+| Beta information | Existing TestFlight contact is saved privately and beta Sign-in Required is No. Build-3 What to Test and beta description were saved previously; they are separate from App Store review fields |
 
-Public App Store release work still remaining:
+Remaining submission work:
 
-1. Complete/recheck the separate App Store review contact and notes, using the contact already supplied; set Sign-in Required to No.
-2. Verify and publish the Data Not Collected label before submitting the public App Store release.
+1. Complete App Store review contact and notes, reusing the existing private TestFlight contact; set Sign-in Required to No.
+2. Verify and publish the Data Not Collected label, and confirm free pricing and existing availability/release settings.
+3. Complete Apple's submission validation, submit **build 3**, and verify the resulting App Review status. Record success only after Connect confirms it.
 
-The steps above concern the public App Store listing and do not block internal TestFlight testing. The privacy label was last verified as unpublished. Build 4 is intended for the existing Internal group first; keep public copy and screenshots unchanged until the user chooses promotion. For the build-4 testing notes and the later same-build promotion procedure, see [TestFlight status](TESTFLIGHT.md).
+No new upload, build-4 promotion, external tester invitation, website deployment, or repository visibility change is part of these remaining steps. The user has already made GitHub public. The [TestFlight record](TESTFLIGHT.md) keeps the later build-4 plan separate.
 
 ## Store copy — saved clarity update
 
-The subtitle, promotional text, description, and keywords below were **saved and revisited in App Store Connect on September 6**. They match build 3 and are intentionally preserved during build-4 internal testing. Build-4 feature copy is not saved or proposed for publication here.
+The subtitle, promotional text, description, and keywords below were **saved and revisited in App Store Connect on September 6**. They match build 3, which the user selected for the September 16 App Store submission. Build-4 feature copy is excluded.
 
 **Name:** Selfie Journey
 
@@ -90,14 +91,14 @@ portrait,daily,diary,timelapse,streak,memories,camera,face,aging,video,photo,pro
 | Privacy choices URL | https://selfiejourney.com/privacy/ — saved |
 | App Store Connect app ID | 6809197003 |
 | Bundle ID | com.strikethrough.PicaDay — preserve |
-| Version/build | At the September 6 check, build 3 was processed and assigned internally, and App Store Distribution selected build 3. Keep that public draft during build-4 internal testing |
+| Version/build | September 16: **1.0 (3)** selected for App Store submission; build 4 remains local for later |
 | Price | Free; user explicitly requested this |
 | In-app purchases/subscriptions | None implemented |
-| Sign-in required | No in saved TestFlight review information; verify the separate App Store review form before public release |
+| Sign-in required | No in saved TestFlight review information; separate App Store form still says Yes as of the September 16 audit and must be corrected |
 | Copyright | 2026 Oliver Benning — saved |
 | Review name/email | Oliver Benning / oliver@strikethrough.com — complete and saved for TestFlight |
 | Review phone | Provided and saved privately in Connect; do not copy it into the repository |
-| Review notes | See [TESTFLIGHT.md](TESTFLIGHT.md), “Beta App Review notes”; also suitable for the initial App Store review |
+| Review notes | Use the paste-ready build-3 App Review notes below; not yet confirmed saved |
 | App icon | SelfieJourney/Assets.xcassets/AppIcon.appiconset/icon.png; shipped opaque 1024×1024 icon bundled in uploaded build; Connect preview matches |
 | Screenshots | Build-3 sets under docs/app-store/iphone and docs/app-store/ipad: all six uploaded, filenames verified, 3 of 10 shown in each device section |
 
@@ -113,25 +114,23 @@ Build 4's optional background removal also runs entirely on device, using Apple 
 
 GitHub support is an ordinary external browser link with no attached identifiers, device details, logs, or app content. Voluntary issues are governed by GitHub's privacy policy and can be public. The website's ordinary Cloudflare requests and retained historical build-1 records are explained separately in the privacy policy. See Apple's [App privacy details guidance](https://developer.apple.com/app-store/app-privacy-details/) for the collection boundary and Apple-service distinction.
 
-Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints reject old-client submissions with verified 410 responses. At the September 6 check, build 2 was in TestFlight review and the separate Distribution draft selected build 3. App Store review information and privacy-label publication remain unfinished.
+Build 1's former five-type label (Device ID, Product Interaction, Other Diagnostic Data, Email Address, Customer Support) described that earlier implementation. Removing those declarations alone would not make build 1 a no-collection app. The retired API endpoints reject old-client submissions with verified 410 responses. At the September 16 check, build 2 is Testing externally and the separate Distribution draft selects build 3. App Store review information and privacy-label publication still require completion/verification.
 
-## Review notes — proposed for build 3
+## App Review notes — ready to paste for build 3
 
-Prepared for the wording update; not yet confirmed saved in Connect.
+Prepared September 16 for the selected App Store build; not yet confirmed saved in Connect. Copy only the text below.
 
-Selfie Journey is a daily selfie and time-lapse app for iPhone and iPad, supporting iOS/iPadOS 18 or later. Users take one selfie each day, use face guides to keep their framing similar, and turn the saved photos into a video showing changes over time. The video is made from actual user photos.
+Selfie Journey lets users take one selfie each day with consistent face framing and turn their saved photos into a time-lapse video. It supports iPhone and iPad running iOS/iPadOS 18 or later. The app is completely free, with no subscriptions, in-app purchases, advertising, or paid features. No separate account, sign-in, or demo credentials are required.
 
-Build 3 clarifies this daily-selfie → consistent-framing → time-lapse flow in the interface. The app is completely free, with no subscriptions, in-app purchases, advertising, or paid feature gates. No separate account, demo credentials, or sign-in is required.
+To review: complete onboarding, choose one of four portrait distances, and set or skip the daily reminder. On Today, tap Take today's selfie and grant camera permission. Try the framing and lighting advice, previous-photo overlay, and optional timer. Library imports a user-selected photo through Apple's Photos picker. Save a selfie with an optional note; saving again on the same day replaces that day's photo. Journal shows the saved daily photos.
 
-Complete onboarding by choosing a portrait distance and optional reminder time. On Today, tap Take today's selfie and grant camera permission to try live capture and framing advice. Library in the camera screen imports a user-selected photo through Apple's Photos picker. Save a selfie with an optional note. Another save on the same day replaces that day's photo.
+In Lookback (Your time-lapse), photos play in date order. Video creation requires photos saved on at least two different days, so a fresh installation initially shows an empty or one-photo state. Once eligible, choose the pace and whether to show dates, then tap Create time-lapse video and share through the standard iOS share sheet. Videos use the user's actual photos.
 
-Face, position, distance, and lighting guidance runs on device and helps the user frame the photo before capture. Journal shows the saved daily photos. Open Lookback, titled Your time-lapse, to preview them in date order. Create time-lapse video becomes available with photos from at least two different days, so a new installation initially shows an empty or one-frame state.
+Photos and notes stay on device. Optional iCloud Drive backups use the user's private iCloud storage and require an Apple Account, iCloud Drive, and available storage. Capture and the journal work without iCloud. We cannot access these backups.
 
-Photos and notes remain local. Optional iCloud Drive backups require an Apple Account with iCloud Drive and available storage; capture and the journal work without iCloud. We cannot access the user's private backups.
+The app collects no data and sends no analytics, tracking identifiers, or diagnostic uploads. Face guidance and video creation run on device. Settings links to the public GitHub project and Issues in the browser without attaching app content or logs; posting there is optional.
 
-The app collects no data and sends no analytics, tracking identifiers, or diagnostic uploads. Settings can open GitHub Issues in the system browser without attaching app content or logs. The user decides whether to post on that separate service.
-
-Network-backed journal storage uses Apple's iCloud facilities. CryptoKit SHA-256 checks backup file integrity; the app implements no custom encryption. Privacy policy: https://selfiejourney.com/privacy/.
+The app uses Apple's system iCloud/networking facilities and CryptoKit SHA-256 for backup integrity, with no custom encryption. Privacy policy: https://selfiejourney.com/privacy/. Support: https://selfiejourney.com/support/.
 
 ## Age rating questionnaire
 
